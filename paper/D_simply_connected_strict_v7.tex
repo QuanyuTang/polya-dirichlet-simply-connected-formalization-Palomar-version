@@ -1,0 +1,1320 @@
+\documentclass[11pt]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,mathtools,mathrsfs,microtype}
+\usepackage[margin=1in]{geometry}
+\usepackage{needspace}
+\usepackage[hidelinks]{hyperref}
+\numberwithin{equation}{section}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newcommand{\D}{\mathbb D}
+\newcommand{\T}{\mathbb T}
+\newcommand{\Hh}{\mathcal H}
+\newcommand{\Id}{I}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Dom}{\operatorname{Dom}}
+\newcommand{\ran}{\operatorname{ran}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\ip}[2]{\langle #1,#2\rangle}
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\OO}{\mathcal O}
+\newcommand{\VV}{\mathcal T}
+\newcommand{\KK}{\mathcal K}
+\title[The strict Dirichlet P\'olya inequality]{The strict Dirichlet P\'olya inequality on simply connected planar domains}
+\date{}
+\begin{document}
+\begin{abstract}
+We prove that the Dirichlet eigenvalues of every bounded simply connected
+planar domain satisfy $|\Omega|\lambda_j(\Omega)>4\pi j$ for all $j\ge1$,
+without any boundary regularity assumption. The proof associates with
+conformal boundary curves a unitary path with positive trace-class
+generator, injective at every positive radius, and integrated trace
+equal to one half of the energy times the area. A boundary identity transfers Dirichlet
+resonances to unitary eigenphases approaching a full turn. A Ky Fan
+estimate controls any prescribed number of crossings by the corresponding
+partial eigenvalue sum of the generator. The remaining spectral tail is
+strictly positive and survives conformal exhaustion.
+\end{abstract}
+\maketitle
+
+\section{Introduction}
+
+Let $G\subset\mathbb R^2$ be a bounded nonempty open set.
+The Dirichlet Laplacian $-\Delta_G^D$ is the self-adjoint operator in
+$L^2(G)$ associated with the quadratic form
+\[
+ q_G[u]=\int_G|\nabla u|^2,\qquad \Dom q_G=H_0^1(G).
+\]
+We denote its eigenvalues, repeated according to multiplicity, by
+$\lambda_1(G)\le\lambda_2(G)\le\cdots$, and write
+\[
+ N_G(E)=\#\{j:\lambda_j(G)\le E\}.
+\]
+We set $N_G(E)=0$ for $E\le0$. All counting functions in this paper
+include the eigenvalues at the stated energy.
+
+For a bounded planar domain with smooth boundary, Weyl's law
+\cite{Weyl} gives
+\[
+ N_G(E)=\frac{|G|}{4\pi}E+o(E)\qquad(E\to\infty).
+\]
+P\'olya asked whether the leading term is an upper bound at every
+energy, rather than only an asymptotic approximation. The conjecture
+appears in his 1954 work on plausible reasoning \cite{Polya54}.
+In its planar Dirichlet form, it asserts that
+\[
+ \lambda_j(G)\ge\frac{4\pi j}{|G|},\qquad j\ge1.
+\]
+The strict form replaces this inequality by $>$ at every index.
+
+P\'olya proved the non-strict inequality for domains that tile the
+plane \cite{Polya61}. The sharp inequalities of Berezin \cite{Berezin}
+and Li--Yau \cite{LiYau} control spectral averages on general domains,
+but do not give the conjectured bound for each eigenvalue. Freitas and
+Salavessa \cite{FS} obtained families of non-tiling examples. Filonov,
+Levitin, Polterovich, and Sher proved the conjecture for disks and
+arbitrary circular sectors, and the Dirichlet conjecture for Euclidean
+balls \cite{FLPSballs}. They subsequently treated planar annuli
+\cite{FLPSannuli}. These results exploit special geometry; they do not
+supply the inequality for an arbitrary simply connected planar domain.
+
+Our main result gives the strict inequality for all bounded simply
+connected planar domains, without a regularity assumption on the boundary.
+
+\Needspace{12\baselineskip}
+\begin{theorem}\label{thm:main}
+Let $\Omega\subset\mathbb R^2$ be a bounded nonempty simply connected
+domain. Its Dirichlet eigenvalues satisfy
+\begin{equation}\label{eq:strict-eigenvalues}
+ |\Omega|\lambda_j(\Omega)>4\pi j\qquad(j\ge1).
+\end{equation}
+Its counting function satisfies
+\begin{equation}\label{eq:polya}
+ N_\Omega(E)<\frac{|\Omega|E}{4\pi}\qquad(E>0).
+\end{equation}
+\end{theorem}
+
+Here is the mechanism of the proof. At a fixed energy $k^2$, we
+transport the unilateral shift along conformal boundary curves.
+After correcting for the moving initial point and reversing the
+resulting unitary operator, we obtain a path $U_r$ whose generator
+$L_r=-iU_r^*\partial_rU_r$ is positive and trace class. Its integrated
+trace is exactly
+\[
+ \int_0^1\tr L_r\,dr=\frac{k^2}{2}|\Omega|.
+\]
+An identity involving the Dirichlet-to-Neumann map relates a
+Dirichlet eigenvalue to eigenvalues of $U_r$ approaching $1$ through
+the lower half of the unit circle. Counting crossings of $e^{i\alpha}$
+for $\alpha<2\pi$ and then letting $\alpha\uparrow2\pi$ recovers
+the coefficient $4\pi$.
+
+Strictness requires more than this full-trace estimate. If at least
+$m$ crossings occur, we bound their contribution using only the sum
+of the $m$ largest eigenvalues of $L_r$. The difference between the
+full trace and this partial sum is positive, since $L_r$ is injective
+on an infinite-dimensional space for every $r>0$. We retain that
+difference through the limit in $\alpha$ and through conformal
+exhaustion. This gives the strict inequality even when the boundary
+is not regular.
+
+The distinction between an eigenvalue approaching $1$ and an actual
+eigenvalue at $1$ is essential. A related distinction occurs in the
+inside--outside spectral duality of Eckmann and Pillet \cite{EP}.
+We do not identify the boundary transport used here with their
+scattering matrix. Instead, we prove the required boundary identity
+directly on traces of Herglotz waves. This also specifies the domain
+of the unbounded Cayley transform. The density argument is classical
+in scattering theory; see Colton and Kress \cite{CK}. We retain its
+short proof in the precise trace topology needed below.
+
+Section~\ref{sec:phase} gives the eigenphase estimate with a prescribed
+number of crossings. Section~\ref{sec:holonomy} constructs the boundary
+transport and proves the trace identity and positivity of the spectral
+tail. Section~\ref{sec:boundary} establishes the boundary identity on
+Herglotz traces. Section~\ref{sec:poles} relates Dirichlet eigenvalues
+to eigenphases near $2\pi$. Section~\ref{sec:completion} completes the
+counting argument and passes the positive remainder to arbitrary
+simply connected domains.
+
+Throughout, inner products are conjugate-linear in the first variable.
+We identify $\mathbb R^2$ with $\mathbb C$ and put
+$\D=\{z:|z|<1\}$ and $\T=\mathbb R/(2\pi\mathbb Z)$.
+Boundary spaces on $\T$ use $d\theta$; the direction space of
+Herglotz waves uses $d\phi/(2\pi)$. The pairing
+$\ip h{\Lambda h}$ is the $H^{1/2}$--$H^{-1/2}$ duality pairing,
+consistent with the $L^2(d\theta)$ inner product for smooth data.
+If $h_n$ are the coefficients in the orthonormal basis
+$(2\pi)^{-1/2}e^{in\theta}$, our Sobolev norm is
+$\norm h_{H^s(\T)}^2=\sum_{n\in\mathbb Z}(1+n^2)^s|h_n|^2$.
+We write $\mathcal B(\Hh)$ for the bounded operators on $\Hh$,
+and $\Id$ for the identity. The symbols $\sigma$, $\ker$, $\ran$,
+$\rank$, and $\Dom$ denote spectrum, kernel, range, rank, and domain.
+The symbols $\mathcal S_1$ and $\mathcal S_2$ denote the trace-class
+and Hilbert--Schmidt ideals, respectively, and $\tr$ denotes the trace.
+For bounded operators, $[A,B]=AB-BA$.
+
+\section{Eigenphase estimates for positive unitary paths}\label{sec:phase}
+
+For a positive trace-class operator $A$, let
+$\mu_1(A)\ge\mu_2(A)\ge\cdots\ge0$ be its eigenvalues, repeated
+according to multiplicity and supplemented by zeros when necessary.
+For every integer $m\ge1$, set
+\begin{equation}\label{eq:fan-def}
+ \Phi_m(A)=\sum_{\ell=1}^m\mu_\ell(A),\qquad
+ \tau_m(A)=\tr A-\Phi_m(A).
+\end{equation}
+We use Ky Fan's variational principle \cite{Fan} in the form
+\begin{equation}\label{eq:fan-variational}
+ \Phi_m(A)=\sup\{\tr(PA):P=P^*=P^2,\ \rank P\le m\}.
+\end{equation}
+In particular, for positive trace-class $A$ and $B$,
+\begin{equation}\label{eq:fan-continuity}
+ |\Phi_m(A)-\Phi_m(B)|\le\norm{A-B}_{\mathcal S_1},\qquad
+ |\tau_m(A)-\tau_m(B)|\le2\norm{A-B}_{\mathcal S_1}.
+\end{equation}
+Indeed, the first bound follows by taking the supremum in
+\eqref{eq:fan-variational} and using
+$|\tr(P(A-B))|\le\norm{A-B}_{\mathcal S_1}$; the second also uses
+continuity of the trace. If $A$ is injective on an infinite-dimensional
+space, then $\tau_m(A)>0$ for every finite $m$.
+
+For $0<\alpha<2\pi$, a crossing of $e^{i\alpha}$ is a time at which
+it is an eigenvalue of the unitary path. Its multiplicity is the
+dimension of that eigenspace. All such crossings in the next lemma
+are isolated and have increasing local eigenphases.
+
+\begin{lemma}\label{lem:phase}
+Let $U:[0,b]\to\mathcal B(\Hh)$ be a continuously differentiable
+unitary path on a separable Hilbert space, with $U(0)=\Id$.
+Suppose
+\[
+ L(t)=-iU(t)^*U'(t)\ge0
+\]
+is trace class and trace-norm continuous. Assume that $U$ is locally
+real analytic in operator norm for $t>0$, and that
+$\ip v{L(t)v}>0$ for every $v\ne0$ and $t>0$.
+Set $B=\int_0^b\tr L(t)\,dt$.
+Then $U(t)-\Id$ is trace class, and the following statements hold.
+
+\smallskip\noindent
+\textup{(i)} For $0<\alpha<2\pi$, the number $c_\alpha$ of crossings
+of $e^{i\alpha}$ in $(0,b)$, counted with multiplicity, is finite,
+and all crossings are positive. For every integer $m$ with
+$1\le m\le c_\alpha$,
+\begin{equation}\label{eq:fan-cost}
+ \alpha m\le\int_0^b\Phi_m(L(t))\,dt.
+\end{equation}
+In particular,
+\begin{equation}\label{eq:cost}
+ \alpha c_\alpha\le B.
+\end{equation}
+
+\smallskip\noindent
+\textup{(ii)} At each fixed time, $U(t)$ has only finitely many
+eigenvalues in $\{e^{i\theta}:\pi<\theta<2\pi\}$, with multiplicity.
+
+\smallskip\noindent
+\textup{(iii)} Let $0<a<b_1\le b$ and $\pi<\alpha<2\pi$.
+Suppose $U(a)$ has no spectrum with argument in $[\alpha,2\pi)$,
+$e^{i\alpha}\notin\sigma(U(b_1))$, and $U(b_1)$ has at least $m$
+eigenvalues with arguments in $(\alpha,2\pi)$. There are at least
+$m$ crossings of $e^{i\alpha}$ in $(a,b_1)$.
+\end{lemma}
+
+\begin{proof}
+Since $U'=iUL$, integration in trace norm gives
+$U(t)-\Id\in\mathcal S_1$. Every spectral point other than $1$
+is therefore an isolated eigenvalue of finite multiplicity.
+Near such a point, analytic Riesz projections and a local logarithm
+reduce the spectral problem to an analytic Hermitian matrix family;
+we use the standard perturbation results in
+\cite[Chapters II and VII]{Kato}. For a normalized eigenvector
+branch with eigenvalue $e^{i\theta(t)}$,
+\[
+ \theta'(t)=\ip{v(t)}{L(t)v(t)}.
+\]
+At a multiple eigenvalue, the eigenphase derivatives are the
+eigenvalues of the compression of $L(t)$ to the eigenspace.
+This compression is positive definite. Hence every crossing away
+from $1$ is locally isolated and positive.
+
+Choose finite-rank orthogonal projections $P_n\uparrow\Id$ strongly,
+put $L_n=P_nLP_n$, and let $U_n$ be the unitary solution on
+$P_n\Hh$ of $U_n'=iU_nL_n$, $U_n(0)=\Id$; extend $U_n$ by the
+identity on $P_n^\perp\Hh$. The image of $[0,b]$ under $L$ is
+compact in $\mathcal S_1$, so
+\[
+ \sup_t\norm{L_n(t)-L(t)}_{\mathcal S_1}\longrightarrow0.
+\]
+Moreover,
+\[
+ \frac{d}{dt}(U_nU^*)=iU_n(L_n-L)U^*.
+\]
+Integration in trace norm therefore gives
+\begin{equation}\label{eq:approx}
+ \sup_t\norm{U_n(t)-U(t)}_{\mathcal S_1}
+ \le\int_0^b\norm{L_n(t)-L(t)}_{\mathcal S_1}\,dt
+ \longrightarrow0.
+\end{equation}
+The differential equations also give uniform operator-norm
+convergence of the first derivatives.
+
+In finite dimension, the eigenphases admit continuous,
+absolutely continuous, nondecreasing lifts $\theta_{n,j}$ starting
+at zero. They may be obtained from local Hermitian logarithms and
+continued along the interval. At almost every time their derivatives
+are diagonal entries of $L_n(t)$ in an orthonormal eigenbasis; at a
+multiple eigenvalue one diagonalizes its compression. In particular,
+\[
+ \sum_j\theta_{n,j}(b)=\int_0^b\tr L_n(t)\,dt\le B.
+\]
+Fix any $m$ crossings of $e^{i\alpha}$, counted with multiplicity.
+Let $q_j$ be the number of selected crossings belonging to the
+$j$th lifted phase, and put $J=\{j:q_j>0\}$. Then
+$\sum_{j\in J}q_j=m$ and $|J|\le m$. Monotonicity gives
+\[
+ \theta_{n,j}(b)\ge\alpha+2\pi(q_j-1)\ge\alpha q_j
+ \qquad(j\in J).
+\]
+This remains true when the selected crossings omit earlier crossings
+of the same branch. At almost every time, the eigenvectors belonging
+to the branches in $J$ form an orthonormal family. The variational
+principle \eqref{eq:fan-variational} therefore yields
+\begin{equation}\label{eq:finite-fan-cost}
+ \alpha m\le\sum_{j\in J}\theta_{n,j}(b)
+ =\int_0^b\sum_{j\in J}\theta_{n,j}'(t)\,dt
+ \le\int_0^b\Phi_m(L_n(t))\,dt\le B.
+\end{equation}
+Taking all crossings proves the finite-dimensional bound $B/\alpha$.
+More generally, \eqref{eq:finite-fan-cost} applies whenever at least
+$m$ crossings are available; they need not belong to distinct branches.
+
+We explain the passage to $U$ without following eigenvalues through
+$1$. Fix a crossing time $t_0\in(0,b)$ of multiplicity $q$.
+Choose a small arc about $e^{i\alpha}$, disjoint from $1$, whose
+spectral projection at $t_0$ has rank $q$. On a sufficiently small
+closed time interval about $t_0$, that projection keeps rank $q$.
+After identifying its ranges with a fixed space, the local logarithm
+relative to $e^{i\alpha}$ is negative definite at the left endpoint
+and positive definite at the right endpoint. By \eqref{eq:approx},
+the corresponding projections for $U_n$ have the same rank, and
+the endpoint logarithms have the same inertias for large $n$.
+Their eigenvalues must therefore cross zero with total signed
+multiplicity $q$. The positivity of $L_n$ on $P_n\Hh$ for positive
+times makes these crossings positive. The same construction applies
+to any finite collection of crossing times, using disjoint time
+intervals. Their total multiplicity is at most $B/\alpha$.
+This proves both finiteness and \eqref{eq:cost}. If $m\le c_\alpha$,
+choose finitely many crossing windows containing at least $m$
+crossings of $U$, with multiplicity. For all sufficiently large $n$
+the path $U_n$ has at least $m$ crossings in those windows.
+Apply \eqref{eq:finite-fan-cost} to $m$ of them and use
+\eqref{eq:fan-continuity} and the uniform trace-norm convergence
+of $L_n$ to $L$. This proves \eqref{eq:fan-cost}. Both estimates
+remain valid for interior crossings when an endpoint of the full
+path is itself a crossing.
+
+At a fixed time, any finite collection of eigenvalues of $U(t)$
+in the open lower semicircle persists, with multiplicity, under
+\eqref{eq:approx}. Each corresponding eigenvalue of $U_n(t)$ has
+a nonnegative lifted phase greater than $\pi$. The collection
+therefore has size at most $B/\pi$. Since the collection was
+arbitrary, this proves (ii).
+
+For (iii), choose $\beta<2\pi$ above the arguments of $m$ selected
+eigenvalues at $b_1$, with $e^{i\beta}$ outside both endpoint spectra.
+The spectral projection onto the arc $(\alpha,\beta)$ has finite
+rank. Between crossings of the endpoints its rank is constant.
+Part (i) gives only finitely many endpoint crossings, and their
+positive directions give the rank balance
+\[
+ n_{(\alpha,\beta)}(b_1)-n_{(\alpha,\beta)}(a)
+ =c_\alpha(a,b_1)-c_\beta(a,b_1).
+\]
+Here $n$ denotes spectral multiplicity in the indicated arc, and
+$c$ denotes crossing multiplicity in the indicated time interval.
+The initial rank is zero, the final rank is at least $m$, and
+$c_\beta(a,b_1)\ge0$. This proves (iii).
+\end{proof}
+
+\section{Boundary transport and the area identity}\label{sec:holonomy}
+
+Until Section~\ref{sec:completion}, assume that
+$\Omega=F(\D)$, where $F$ is holomorphic and injective on a
+neighborhood of $\overline\D$. Fix $k>0$, and define
+\[
+ \Omega_r=F(r\D),\qquad \gamma_r(\theta)=F(re^{i\theta}),
+ \qquad 0<r\le1.
+\]
+The curves are positively oriented. We write
+$\gamma_r'=\partial_\theta\gamma_r$; radial derivatives of
+operators will be written as $\partial_r$.
+
+Let $\Hh=\ell^2(\mathbb N_0)$, where $\mathbb N_0=\{0,1,\ldots\}$, with standard basis $(e_n)_{n\ge0}$,
+and let $Se_n=e_{n+1}$. If $P_0v=e_0\ip{e_0}v$, then
+$[S^*,S]=P_0$. Define the unitary transport $W_r(\theta)$ by
+\begin{equation}\label{eq:W}
+ \partial_\theta W_r
+ =-\frac{ik}{2}(\gamma_r'S^*+\overline{\gamma_r'}S)W_r,
+ \qquad W_r(0)=\Id,
+ \qquad V_r=W_r(2\pi).
+\end{equation}
+Writing $\gamma_r=x+iy$, set
+\[
+ X=-\frac{ik}{2}(S+S^*),\qquad Y=\frac{k}{2}(S^*-S).
+\]
+These are bounded skew-adjoint operators, and
+$[X,Y]=ik^2P_0/2$. Put
+\[
+ C_\theta=x_\theta X+y_\theta Y,\qquad
+ C_r=x_rX+y_rY,\qquad B_r=C_r(r,0)=C_r(r,2\pi).
+\]
+The moving initial point is removed by solving
+$\partial_rR_r=B_rR_r$, $R_0=\Id$, and setting
+\begin{equation}\label{eq:based}
+ H_r=R_r^*V_rR_r,\qquad U_r=H_r^*.
+\end{equation}
+The loop at $r=0$ is constant, so $U_0=\Id$.
+
+\begin{proposition}\label{prop:area}
+The path $U_r$ satisfies the assumptions of Lemma~\ref{lem:phase}.
+Its generator $L_r=-iU_r^*\partial_rU_r$ satisfies, for $0<b\le1$,
+\begin{equation}\label{eq:area}
+ \int_0^b\tr L_r\,dr=\frac{k^2}{2}|\Omega_b|.
+\end{equation}
+For every integer $m\ge1$ and every $r>0$,
+\begin{equation}\label{eq:positive-tail}
+ \tau_m(L_r)>0.
+\end{equation}
+Writing $L_{r,k}$ when the energy parameter varies, the map
+$(r,k)\mapsto L_{r,k}$ is jointly continuous in trace norm for
+$r\in[0,1]$ and $k>0$.
+\end{proposition}
+
+\begin{proof}
+Differentiating \eqref{eq:W} yields
+\[
+ \partial_\theta(W_r^*\partial_rW_r-W_r^*C_rW_r)
+ =W_r^*(\partial_rC_\theta-\partial_\theta C_r+[C_\theta,C_r])W_r.
+\]
+The mixed derivatives cancel. Since
+\[
+ J=x_ry_\theta-x_\theta y_r=r|F'(re^{i\theta})|^2,
+ \qquad [C_\theta,C_r]=-J[X,Y],
+\]
+integration around the boundary gives
+\[
+ V_r^*\partial_rV_r
+ =V_r^*B_rV_r-B_r-\frac{ik^2}{2}
+       \int_0^{2\pi}J W_r^*P_0W_r\,d\theta.
+\]
+Differentiating \eqref{eq:based} cancels the first two terms:
+\begin{equation}\label{eq:Q}
+ H_r^*\partial_rH_r=-iQ_r,\qquad
+ Q_r=\frac{k^2}{2}R_r^*
+       \left(\int_0^{2\pi}J W_r^*P_0W_r\,d\theta\right)R_r.
+\end{equation}
+Thus $L_r=H_rQ_rH_r^*\ge0$. The integral in \eqref{eq:Q} is a
+trace-norm integral of positive rank-one operators.
+Taking the trace in \eqref{eq:Q} gives
+\[
+ \tr L_r=\frac{k^2}{2}\int_0^{2\pi}
+       r|F'(re^{i\theta})|^2\,d\theta.
+\]
+Integration from $0$ to $b$ proves \eqref{eq:area} by the conformal area formula. The same representation gives
+trace-norm continuity, including at $r=0$.
+
+Suppose $r>0$ and $\ip v{Q_rv}=0$.
+The zeroth component of $f(\theta)=W_r(\theta)R_rv$ vanishes for
+every $\theta$, since $J>0$. Its differential equation is
+$0=f_0'=-(ik/2)\gamma_r'f_1$. Since $\gamma_r'\ne0$, we obtain
+$f_1=0$. Successively applying the component equations gives
+$f_n=0$ for every $n$, and hence $v=0$. Unitary conjugation proves
+the required strict positivity of $L_r$. In particular, $L_r$
+is injective on the infinite-dimensional space $\Hh$. Its compactness
+then implies \eqref{eq:positive-tail} by \eqref{eq:fan-def}.
+
+The coefficients of both operator differential equations are locally
+real analytic in $r$, uniformly in $\theta$. The uniformly convergent
+Picard series on compact parameter neighborhoods gives operator-norm
+real analyticity of $W_r,V_r,R_r,U_r$. At $r=0$ the same equations
+and \eqref{eq:Q} give continuous differentiability. This verifies
+the remaining assumptions of Lemma~\ref{lem:phase}.
+
+Continuous dependence in the same differential equations gives joint
+operator-norm continuity of $W_r(\theta)$, $R_r$, and $H_r$ in
+$(r,k)$, uniformly in $\theta$ on compact parameter sets.
+The integrand in \eqref{eq:Q} is a continuous rank-one operator
+in trace norm. That formula and $L_r=H_rQ_rH_r^*$ give the stated
+joint trace-norm continuity, including at $r=0$ where $J=0$.
+\end{proof}
+
+\section{Herglotz waves and the boundary identity}\label{sec:boundary}
+
+\subsection{Density of boundary traces}
+For $a\in L^2(\T,d\phi/(2\pi))$, define the Herglotz wave
+\begin{equation}\label{eq:herglotz}
+ u_a(z)=\int_0^{2\pi}a(\phi)
+ \exp\left[-\frac{ik}{2}(ze^{-i\phi}+\bar z e^{i\phi})\right]
+ \frac{d\phi}{2\pi}.
+\end{equation}
+It is smooth on $\mathbb R^2$ and satisfies $(\Delta+k^2)u_a=0$.
+We use the following standard consequence of uniqueness for the
+exterior Helmholtz problem; compare \cite{CK,EP}.
+
+\begin{lemma}\label{lem:density}
+Let $G$ be a bounded smooth Jordan domain. If
+$k^2\notin\sigma(-\Delta_G^D)$, the traces of the waves
+\eqref{eq:herglotz} are dense in $H^{1/2}(\partial G)$.
+\end{lemma}
+
+\begin{proof}
+Let a continuous linear functional represented by
+$g\in H^{-1/2}(\partial G)$ annihilate all the traces in question.
+Form the outgoing single-layer potential with density $g$ and
+fundamental solution $(i/4)H_0^{(1)}(k|x-y|)$, where $H_0^{(1)}$
+is the Hankel function of the first kind and order zero.
+The far field is, up to a nonzero constant, the pairing of $g$
+with plane waves. The annihilation assumption for arbitrary
+$L^2$ direction densities makes this far field zero in $L^2$
+and then in every direction by continuity.
+
+Rellich's uniqueness theorem, or the outgoing Fourier--Hankel
+expansion outside a large disk, makes the potential zero there.
+Unique continuation and connectedness of the exterior make it zero
+throughout $\mathbb R^2\setminus\overline G$.
+The single-layer mapping
+$H^{-1/2}(\partial G)\to H^1_{\rm loc}(\mathbb R^2)$ ensures that
+the interior and exterior Dirichlet traces agree; see
+\cite[Section 3]{EP}. Thus the interior solution has zero boundary
+trace and is zero by the nonresonance assumption. Applying
+$-\Delta-k^2$ distributionally now gives
+$g\delta_{\partial G}=0$, and hence $g=0$.
+The Hahn--Banach theorem proves the assertion.
+\end{proof}
+
+Smooth boundary parametrizations preserve $H^{1/2}$, so the lemma
+also applies to the traces pulled back to $\T$.
+We call a radius $r$ nonresonant when
+$k^2\notin\sigma(-\Delta_{\Omega_r}^D)$.
+
+\subsection{The Cayley transform}
+
+\begin{lemma}\label{lem:injective}
+At every nonresonant radius,
+$\ker(V_r-\Id)=\{0\}$.
+\end{lemma}
+
+\begin{proof}
+Suppress $r$. Embed $\Hh$ as the nonnegative Fourier modes in
+$\ell^2(\mathbb Z)=L^2(\T,d\phi/(2\pi))$, and let $Z$ be
+multiplication by $\zeta=e^{i\phi}$. The full-space transport is
+\[
+ M(\theta)=\exp\left[-\frac{ik}{2}
+ \big((\gamma(\theta)-\gamma(0))Z^*
+ + (\overline{\gamma(\theta)}-\overline{\gamma(0)})Z\big)\right].
+\]
+Its generators commute, and $M(0)=M(2\pi)=\Id$.
+Extend $f(\theta)=W(\theta)v$ by zero to the negative indices.
+Then
+\[
+ f'=-\frac{ik}{2}(\gamma'Z^*+\overline{\gamma'}Z)f
+       +\frac{ik}{2}\gamma'f_0e_{-1}.
+\]
+Variation of constants in the bilateral space gives
+\[
+ (V-\Id)v=\frac{ik}{2}\int_0^{2\pi}
+       M(\theta)^*e_{-1}\gamma'(\theta)f_0(\theta)\,d\theta.
+\]
+If $Vv=v$, multiplication by $\zeta$ and by a nonvanishing
+direction-dependent phase yields
+\[
+ \int_0^{2\pi}\gamma'(\theta)f_0(\theta)
+       e^{ik\operatorname{Re}(\gamma(\theta)e^{-i\phi})}\,d\theta=0.
+\]
+This equality holds for every direction by continuity.
+Changing a direction to its opposite shows that the continuous
+linear functional
+$h\mapsto\int\gamma'f_0h\,d\theta$ annihilates all Herglotz traces.
+Lemma~\ref{lem:density} gives $\gamma'f_0=0$. The component equations
+in \eqref{eq:W} then give $f_n=0$ successively, so $v=0$.
+\end{proof}
+
+At a nonresonant radius define
+\begin{equation}\label{eq:cayley}
+ \KK_r=i(\Id+V_r)(\Id-V_r)^{-1},
+ \qquad \Dom\KK_r=\ran(\Id-V_r).
+\end{equation}
+Normality of $V_r$ and Lemma~\ref{lem:injective} make this domain
+dense. The usual Cayley-transform construction gives a self-adjoint
+operator. Directly, its two nonreal resolvents are
+\[
+ (\KK_r+i)^{-1}=\frac{\Id-V_r}{2i},\qquad
+ (\KK_r-i)^{-1}=\frac{(\Id-V_r)V_r^*}{2i}.
+\]
+They are compact by Lemma~\ref{lem:phase} and
+Proposition~\ref{prop:area}, so $\KK_r$ has compact resolvent.
+By \eqref{eq:based}, an eigenvalue $e^{i\theta}$ of $U_r$, with
+$0<\theta<2\pi$, corresponds, with the same multiplicity, to
+\begin{equation}\label{eq:cot}
+ \cot(\theta/2)\in\sigma(\KK_r).
+\end{equation}
+Lemma~\ref{lem:phase}(ii) implies that $\KK_r$ has only finitely
+many negative eigenvalues. At each fixed nonresonant radius there
+is therefore a gap in the spectrum of $U_r$ immediately below
+argument $2\pi$. No uniform gap in $r$ is being asserted.
+
+\subsection{A Dirichlet-to-Neumann identity}
+
+Define $\OO_r:\Hh\to L^2(\T,d\theta)$ by
+\[
+ (\OO_rv)(\theta)=\gamma_r'(\theta)\ip{e_0}{W_r(\theta)v}.
+\]
+Its adjoint and Hilbert--Schmidt norm are
+\begin{equation}\label{eq:Ostar}
+ \OO_r^*h=\int_0^{2\pi}W_r(s)^*e_0\overline{\gamma_r'(s)}h(s)\,ds,
+ \qquad \norm{\OO_r}_{\mathcal S_2}^2
+       =\int_0^{2\pi}|\gamma_r'|^2\,d\theta.
+\end{equation}
+Also define the Volterra integral operator
+\[
+ (\VV_rh)(\theta)=\int_0^\theta
+ \gamma_r'(\theta)\overline{\gamma_r'(s)}
+ \ip{e_0}{W_r(\theta)W_r(s)^*e_0}h(s)\,ds.
+\]
+Comparing the kernels on the two triangles gives
+\begin{equation}\label{eq:Volterra}
+ \VV_r+\VV_r^*=\OO_r\OO_r^*.
+\end{equation}
+These operators are bounded locally uniformly in $r>0$.
+The cut at $\theta=0$ causes no difficulty for these $L^2$ operators.
+
+At a nonresonant radius, let
+$\Lambda_r:H^{1/2}(\T)\to H^{-1/2}(\T)$ be the
+Dirichlet-to-Neumann map with conormal density:
+\[
+ (\Lambda_rh)(\theta)=|\gamma_r'(\theta)|
+       \partial_\nu u(\gamma_r(\theta)),\qquad
+ (\Delta+k^2)u=0,\qquad u\circ\gamma_r=h,
+\]
+where $\nu$ is the outward unit normal.
+Conformal pullback identifies $\Lambda_r$ with the disk
+Dirichlet-to-Neumann map for
+\begin{equation}\label{eq:Ar}
+ \mathscr A_r=-\Delta-k^2w_r,\qquad
+ w_r(z)=r^2|F'(rz)|^2.
+\end{equation}
+Its Dirichlet realization $A_r$ has domain
+$H^2(\D)\cap H_0^1(\D)$. We distinguish the differential expression
+$\mathscr A_r$ from the operator $A_r$ on that domain.
+
+Put
+\[
+ \mathfrak r_r[h]=\ip h{i\partial_\theta h}
+       +\frac{ik^2}{4}\ip h{(\VV_r-\VV_r^*)h}.
+\]
+This is a Hermitian quadratic form on $H^{1/2}(\T)$.
+
+\begin{proposition}\label{prop:identity}
+At a nonresonant radius, every Herglotz trace $h=u_a\circ\gamma_r$
+satisfies $\OO_r^*h\in\Dom\KK_r$ and
+\begin{equation}\label{eq:identity}
+ \Lambda_rh=i\partial_\theta h
+       +\frac{ik^2}{4}(\VV_r-\VV_r^*)h
+       +\frac{k^2}{4}\OO_r\KK_r\OO_r^*h.
+\end{equation}
+For every compact interval $I\subset(0,1]$, there is a constant
+$C_I$ such that
+\begin{equation}\label{eq:remainder}
+ |\mathfrak r_r[h]|\le C_I\norm h_{H^{1/2}(\T)}^2
+       \qquad(r\in I,\ h\in H^{1/2}(\T)).
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Write $\partial=(\partial_x-i\partial_y)/2$ and
+$\bar\partial=(\partial_x+i\partial_y)/2$, and set
+\[
+ f_n(z)=(2i/k)^{n+1}\partial^{n+1}u_a(z),\qquad n\ge0.
+\]
+These are the Fourier coefficients of indices $n+1$ of
+$a(\phi)e^{-ik\operatorname{Re}(ze^{-i\phi})}$.
+Parseval's identity gives $f(z)\in\Hh$ and
+$\norm{f(z)}\le\norm a_{L^2(d\phi/(2\pi))}$.
+Differentiation is valid in $\Hh$, because the differentiated
+multipliers are bounded on the direction space. We have
+\[
+ \partial f_n=-\frac{ik}{2}f_{n+1},\qquad
+ \bar\partial f_n=-\frac{ik}{2}f_{n-1},\qquad f_{-1}=u_a.
+\]
+On the boundary this gives
+\[
+ \partial_\theta f=-\frac{ik}{2}
+       (\gamma_r'S^*+\overline{\gamma_r'}S)f
+       -\frac{ik}{2}\overline{\gamma_r'}h e_0.
+\]
+If $v=f(\gamma_r(0))$, variation of constants gives
+\[
+ f(\theta)=W_r(\theta)v-\frac{ik}{2}W_r(\theta)
+       \int_0^\theta W_r(s)^*e_0\overline{\gamma_r'(s)}h(s)\,ds.
+\]
+Periodicity and \eqref{eq:Ostar} imply
+\begin{equation}\label{eq:endpoint}
+ (\Id-V_r)v=-\frac{ik}{2}V_r\OO_r^*h.
+\end{equation}
+In particular,
+\[
+ \OO_r^*h=\frac{2i}{k}(V_r^*-\Id)v
+       =\frac{2i}{k}(\Id-V_r)V_r^*v\in\Dom\KK_r.
+\]
+This establishes the domain assertion in \eqref{eq:cayley} before an inverse is used.
+
+For a positively oriented curve, the outward normal is
+$-i\gamma_r'/|\gamma_r'|$. A direct calculation therefore gives
+\[
+ |\gamma_r'|\partial_\nu u_a=i\partial_\theta h-k\gamma_r'f_0,
+ \qquad \gamma_r'f_0=\OO_rv-\frac{ik}{2}\VV_rh.
+\]
+Nonresonance identifies $u_a$ with the solution defining $\Lambda_r$.
+Using \eqref{eq:endpoint}, we obtain
+\[
+ \Lambda_rh=i\partial_\theta h
+       +\frac{ik^2}{2}\OO_r(\Id-V_r)^{-1}V_r\OO_r^*h
+       +\frac{ik^2}{2}\VV_rh.
+\]
+All inverses act on the ranges just established. On this domain,
+\[
+ i(\Id-V_r)^{-1}V_r=\tfrac12\KK_r-\tfrac i2\Id.
+\]
+Equation \eqref{eq:Volterra} proves \eqref{eq:identity}.
+
+For the orthonormal Fourier basis $(2\pi)^{-1/2}e^{in\theta}$,
+\[
+ |\ip h{i\partial_\theta h}|
+ \le\sum_{n\in\mathbb Z}|n||h_n|^2
+ \le\norm h_{H^{1/2}(\T)}^2.
+\]
+The operator $i(\VV_r-\VV_r^*)$ is bounded and self-adjoint on
+$L^2$, with locally uniform bounds given by its kernel.
+This proves \eqref{eq:remainder}, including at resonant radii,
+since no Dirichlet resolvent occurs in $\mathfrak r_r$.
+\end{proof}
+
+The last term in \eqref{eq:identity} is asserted only on Herglotz
+traces. Density alone would not justify extending a composition
+with the unbounded operator $\KK_r$ to all of $H^{1/2}(\T)$.
+
+\section{Dirichlet eigenvalues and unitary eigenphases}\label{sec:poles}
+
+We first record the sign and multiplicity of the singularity of
+$\Lambda_r$ as a Dirichlet eigenvalue is approached from smaller
+domains. The proof uses finite-dimensional spectral projections
+rather than a choice of varying eigenfunctions.
+
+\begin{lemma}\label{lem:pole}
+Suppose $k^2$ is a Dirichlet eigenvalue of $\Omega_{r_*}$ of
+multiplicity $m$, where $r_*>0$. There are linearly independent
+$h_1,\ldots,h_m\in C^\infty(\T)$ and numbers $M_r\to+\infty$ as
+$r\uparrow r_*$ such that, for every sufficiently close nonresonant
+$r<r_*$,
+\begin{equation}\label{eq:pole}
+ \ip{h_c}{\Lambda_rh_c}\le-M_r|c|^2,
+ \qquad h_c=\sum_{j=1}^m c_jh_j,\qquad c\in\mathbb C^m.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Every ordered eigenvalue $\lambda_j(\Omega_r)$ is strictly decreasing
+in $r$. Indeed, suppose $r<s$ and the two $j$th eigenvalues equal
+$\lambda$. The first $j$ eigenfunctions on $\Omega_r$, extended by
+zero, span a trial space on $\Omega_s$ with Rayleigh quotients at
+most $\lambda$. It contains a nonzero vector orthogonal to the
+spectral subspace of $\Omega_s$ below $\lambda$, whose dimension is
+at most $j-1$. The spectral theorem forces that vector to be an
+eigenfunction on $\Omega_s$ at $\lambda$. It vanishes on the
+nonempty open set $\Omega_s\setminus\overline{\Omega_r}$,
+contrary to unique continuation.
+
+These eigenvalues are also continuous for $r>0$: use the min--max
+principle on the fixed disk with denominator
+$\int_\D w_r|u|^2$. On a compact positive-radius interval the
+weights converge uniformly and are bounded away from zero.
+By conformal invariance of the Dirichlet energy, the number of
+negative eigenvalues of $A_r$ in \eqref{eq:Ar} is
+$\#\{j:\lambda_j(\Omega_r)<k^2\}$, and its nullity is the
+multiplicity of $k^2$.
+
+The bounded potentials in $A_r$ vary continuously in $L^\infty$,
+so the operators vary in norm resolvent. Let $P_r$ be the Riesz
+projection of the spectral cluster near zero that equals
+$\ker A_{r_*}$ at $r_*$. Its rank is $m$, and $P_r\to P_*$ in
+operator norm. Strict monotonicity and continuity of the domain
+eigenvalues show that the negative index below $r_*$ equals the
+negative index at $r_*$. The spectrum outside the cluster is
+uniformly separated from zero. Thus all $m$ cluster eigenvalues
+are positive for $r<r_*$ close enough, and
+\[
+ 0<A_r|_{\ran P_r}\le\varepsilon_r\Id,
+ \qquad \varepsilon_r\longrightarrow0.
+\]
+The inverse on $\ran(\Id-P_r)$ is uniformly bounded.
+This argument does not require $w_r$ to be pointwise monotone.
+
+Choose an orthonormal basis $\phi_1,\ldots,\phi_m$ of
+$\ker A_{r_*}$ and put $g_j=\partial_\nu\phi_j|_\T$.
+Elliptic regularity gives $g_j\in C^\infty(\T)$.
+They are linearly independent by uniqueness for zero Dirichlet and
+Neumann data. In this setting that uniqueness follows by transferring
+the equation to $\Omega_{r_*}$ and extending the solution by zero: both
+vanishing traces make the extension solve the Helmholtz equation
+distributionally on the plane, so its Fourier transform, an $L^2$
+function supported on $\{|\xi|=k\}$, must vanish.
+
+Set $h_j=g_j$ and choose fixed smooth extensions $\mathcal E h_j$ to
+$\overline\D$. Extend $\mathcal E$ linearly on their span. For $h=h_c$ set
+$f_{r,h}=\mathscr A_r\mathcal E h\in L^2(\D)$,
+$v_{r,h}=A_r^{-1}f_{r,h}$, and $u_{r,h}=\mathcal E h-v_{r,h}$.
+Then $u_{r,h}$ solves $\mathscr A_ru_{r,h}=0$ with boundary value $h$.
+If
+\[
+ q_r[p,q]=\int_\D
+ \bigl(\nabla\overline p\cdot\nabla q-k^2w_r\overline p\,q\bigr),
+\]
+Green's identity gives $q_r[v_{r,h},u_{r,h}]=0$ and
+$\ip h{\Lambda_rh}=q_r[u_{r,h},u_{r,h}]$. Since
+$\mathcal E h=u_{r,h}+v_{r,h}$ and
+$q_r[v_{r,h},v_{r,h}]=\ip{f_{r,h}}{A_r^{-1}f_{r,h}}$, we obtain
+\begin{equation}\label{eq:schur}
+ \ip h{\Lambda_rh}
+ =\int_\D\bigl(|\nabla\mathcal E h|^2-k^2w_r|\mathcal E h|^2\bigr)
+       -\ip{f_{r,h}}{A_r^{-1}f_{r,h}}.
+\end{equation}
+At $r_*$, a second application of Green's identity yields
+\[
+ \ip{\phi_i}{f_{r_*,h}}=\int_\T\overline{g_i}h\,d\theta.
+\]
+For $h=\sum c_jg_j$, these coefficients are the product of the
+positive-definite Gram matrix of the $g_j$ with $c$.
+Continuity gives $\norm{P_rf_{r,h_c}}\ge c_0|c|$ for a fixed
+$c_0>0$ and nearby $r$.
+The cluster contribution to the last term of \eqref{eq:schur} is
+at most $-c_0^2|c|^2/\varepsilon_r$. The remaining terms are
+bounded in absolute value by $C|c|^2$. Taking
+$M_r=c_0^2/\varepsilon_r-C$ proves \eqref{eq:pole}.
+\end{proof}
+
+We now use the boundary identity to transfer these negative
+directions to the spectrum of the Cayley transform.
+
+\begin{proposition}\label{prop:near}
+Under the assumptions of Lemma~\ref{lem:pole}, for every
+$\pi<\alpha<2\pi$ and every sufficiently close nonresonant
+$r<r_*$, the operator $U_r$ has at least $m$ eigenvalues with
+arguments in $(\alpha,2\pi)$, counted with multiplicity.
+\end{proposition}
+
+\begin{proof}
+Let $J_0:\mathbb C^m\to H^{1/2}(\T)$ be the map $J_0c=h_c$.
+At each fixed nonresonant $r$, Lemma~\ref{lem:density} provides
+Herglotz traces $\widetilde h_{r,j}$ such that the map
+$J_rc=\sum c_j\widetilde h_{r,j}$ satisfies
+\[
+ \norm{J_r-J_0}\le\delta_r\le1,\qquad
+ \norm{\Lambda_r}\delta_r(2\norm{J_0}+1)\le1.
+\]
+Here $\norm{\Lambda_r}$ is the norm from $H^{1/2}$ to $H^{-1/2}$.
+The quadratic-form error is at most $|c|^2$, so \eqref{eq:pole}
+gives
+\[
+ \ip{J_rc}{\Lambda_rJ_rc}\le-(M_r-1)|c|^2,
+ \qquad \norm{J_rc}_{H^{1/2}}\le C_0|c|,
+\]
+with $C_0$ independent of $r$. The approximation is chosen separately
+at each radius; no uniform bound on the Herglotz densities is needed.
+
+Set $x_{r,c}=\OO_r^*J_rc$. Proposition~\ref{prop:identity} places
+these vectors in $\Dom\KK_r$. Equations \eqref{eq:identity},
+\eqref{eq:remainder}, and \eqref{eq:Ostar} give
+\[
+ \ip{x_{r,c}}{\KK_rx_{r,c}}
+       \le-\frac4{k^2}(M_r-C_1)|c|^2,
+ \qquad \norm{x_{r,c}}\le C_2|c|,
+\]
+with constants uniform near $r_*$. When $M_r>C_1$, this map is
+injective, since a zero image would contradict the strict negative
+bound. Its image is an $m$-dimensional subspace of $\Dom\KK_r$
+on which the Rayleigh quotient is at most
+$-4(M_r-C_1)/(k^2C_2^2)$.
+
+For any $D>0$, the spectral projection of $\KK_r$ onto
+$(-\infty,-D)$ therefore has rank at least $m$ when $r$ is close
+enough to $r_*$. Otherwise that image subspace would contain a
+nonzero vector orthogonal to the projection, with quadratic form
+at least $-D$ times its squared norm, a contradiction.
+Choose $D$ so that $-D<\cot(\alpha/2)$, and use \eqref{eq:cot}.
+\end{proof}
+
+Only Herglotz waves have been differentiated to form infinite
+sequences. No such sequence has been assigned to an arbitrary
+Dirichlet eigenfunction, and no eigenvalue exactly equal to $1$
+is asserted at a resonant radius.
+
+\section{Counting and completion of the proof}\label{sec:completion}
+
+\subsection{Domains with analytic boundary}
+We retain the spectral tail in the counting argument. The energy
+parameter in $L_{r,k}$ is written explicitly from this point onward.
+
+\Needspace{12\baselineskip}
+\begin{proposition}\label{prop:remainder}
+Let $\Omega=F(\D)$, where $F$ is holomorphic and injective on a
+neighborhood of $\overline\D$. For every $k>0$ and every integer
+$m$ with $1\le m\le N_\Omega(k^2)$,
+\begin{equation}\label{eq:count-fan}
+ 2\pi m\le\int_0^1\Phi_m(L_{r,k})\,dr,
+\end{equation}
+and
+\begin{equation}\label{eq:quantitative-analytic}
+ k^2|\Omega|\ge4\pi m+2\int_0^1\tau_m(L_{r,k})\,dr>4\pi m.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Continuity and strict monotonicity of $\lambda_j(\Omega_r)$ were
+proved in Lemma~\ref{lem:pole}. Since $w_r\le Cr^2$ near zero,
+the disk Poincar\'e inequality gives
+$\lambda_1(\Omega_r)\to\infty$ as $r\downarrow0$.
+It follows that there are finitely many radii
+$0<r_1<\cdots<r_q\le1$ where $k^2$ is a Dirichlet eigenvalue.
+If their multiplicities are $m_1,\ldots,m_q$, then
+\begin{equation}\label{eq:count}
+ \sum_{\ell=1}^q m_\ell=N_\Omega(k^2).
+\end{equation}
+Indeed, each ordered eigenvalue at most $k^2$ at $r=1$ crosses
+that value exactly once, and every other eigenvalue stays above it.
+Under the assumptions of the proposition, $q\ge1$.
+
+Choose nonresonant radii $a_1\in(0,r_1)$ and
+$a_\ell\in(r_{\ell-1},r_\ell)$ for $\ell\ge2$.
+Lemma~\ref{lem:phase}(ii) gives a common
+$\alpha_0\in(\pi,2\pi)$ such that no $U_{a_\ell,k}$ has spectrum
+with argument in $[\alpha_0,2\pi)$.
+Fix $\alpha\in(\alpha_0,2\pi)$. Proposition~\ref{prop:near}
+provides $b_\ell\in(a_\ell,r_\ell)$ at which there are at least
+$m_\ell$ eigenvalues with arguments in $(\alpha,2\pi)$.
+The selected eigenvalues persist in that open arc under small
+perturbations of $b_\ell$. Since crossings of $e^{i\alpha}$ are
+isolated, we may also arrange that
+$e^{i\alpha}\notin\sigma(U_{b_\ell,k})$.
+
+Lemma~\ref{lem:phase}(iii) gives at least $m_\ell$ crossings in
+each $(a_\ell,b_\ell)$. These intervals are disjoint. By
+\eqref{eq:count}, the full path has at least $N_\Omega(k^2)$
+crossings, and hence at least $m$. Applying the strengthened
+estimate \eqref{eq:fan-cost} to this prescribed number gives
+\[
+ \alpha m\le\int_0^1\Phi_m(L_{r,k})\,dr.
+\]
+The right-hand side is independent of $\alpha$. Letting
+$\alpha\uparrow2\pi$ proves \eqref{eq:count-fan}.
+Equations \eqref{eq:fan-def} and \eqref{eq:area} give
+\eqref{eq:quantitative-analytic}; its last inequality follows from
+\eqref{eq:positive-tail} and continuity. If $r_q=1$, the argument
+still uses $b_q<1$, so the endpoint multiplicity is included.
+\end{proof}
+
+\subsection{Arbitrary boundary}
+A limit of strict inequalities need not be strict. We therefore pass
+the positive spectral tail, rather than only the strict inequality,
+through the conformal exhaustion. This completes the proof of
+Theorem~\ref{thm:main}.
+
+\begin{proof}
+Let $F:\D\to\Omega$ be a Riemann map and set
+$\Omega_s=F(s\D)$ for $0<s<1$. The map $z\mapsto F(sz)$ is
+holomorphic and injective on a neighborhood of $\overline\D$.
+The boundary transport for $F$ is defined on each compact radial
+interval in $[0,1)$; the constructions on these intervals agree by
+uniqueness of the differential equations. We denote its generator
+by $L_{r,k}$ for $0\le r<1$ and $k>0$.
+
+Fix $j\ge1$. We first recall spectral convergence under this
+exhaustion. Domain monotonicity shows that $\lambda_j(\Omega_s)$
+decreases to a limit not smaller than $\lambda_j(\Omega)$.
+Conversely, the min--max principle and the form-core property of
+$C_c^\infty(\Omega)$ give, for every $\varepsilon>0$, a
+$j$-dimensional subspace $V\subset C_c^\infty(\Omega)$ such that
+\[
+ \max_{0\ne u\in V}
+ \frac{\int_\Omega|\nabla u|^2}{\int_\Omega|u|^2}
+ \le\lambda_j(\Omega)+\varepsilon.
+\]
+The union of the supports of a basis of $V$ is compact in $\Omega$,
+so it is contained in $\Omega_s$ when $s$ is sufficiently close to
+$1$. The min--max principle on $\Omega_s$ then gives
+$\lambda_j(\Omega_s)\le\lambda_j(\Omega)+\varepsilon$.
+Thus, with
+\begin{equation}\label{eq:exhaustion-energy}
+ k_s=\sqrt{\lambda_j(\Omega_s)},\qquad
+ k=\sqrt{\lambda_j(\Omega)},
+\end{equation}
+we have $k_s\to k>0$ and $|\Omega_s|\uparrow|\Omega|$.
+
+Apply Proposition~\ref{prop:remainder} to $F(s\,\cdot)$ at energy
+$k_s^2$ and with $m=j$. This is permitted since
+$N_{\Omega_s}(k_s^2)\ge j$, including any multiplicity at that
+energy. Under the radial change of variable $r=st$, the unitary
+path for $F(s\,\cdot)$ is $U_{st,k_s}$ and its generator is
+$sL_{st,k_s}$. This follows also for the initial-point correction
+from the defining differential equation for $R_r$.
+Since $\tau_j$ is positively homogeneous, the proposition gives
+\begin{equation}\label{eq:exhaustion-remainder}
+ |\Omega_s|\lambda_j(\Omega_s)
+ \ge4\pi j+2\int_0^s\tau_j(L_{r,k_s})\,dr.
+\end{equation}
+
+For every fixed $r\in(0,1)$, the joint trace-norm continuity in
+Proposition~\ref{prop:area} and \eqref{eq:fan-continuity} imply
+\[
+ \tau_j(L_{r,k_s})\longrightarrow\tau_j(L_{r,k})
+ \qquad(s\uparrow1).
+\]
+Choose any sequence $s_n\uparrow1$. Apply Fatou's lemma on $(0,1)$
+to the nonnegative functions
+$\mathbf1_{(0,s_n)}(r)\tau_j(L_{r,k_{s_n}})$, and use
+\eqref{eq:exhaustion-remainder} and \eqref{eq:exhaustion-energy}.
+We obtain
+\begin{equation}\label{eq:quantitative-rough}
+ |\Omega|\lambda_j(\Omega)
+ \ge4\pi j+2\int_0^1\tau_j(L_{r,k})\,dr.
+\end{equation}
+The integral is finite because
+\[
+ 0\le\tau_j(L_{r,k})\le\tr L_{r,k},\qquad
+ \int_0^1\tr L_{r,k}\,dr=\frac{k^2}{2}|\Omega|;
+\]
+the trace identity follows first on compact radial intervals and
+then by monotone convergence. The integral in
+\eqref{eq:quantitative-rough} is strictly positive. Indeed,
+$L_{r,k}$ is injective on $\ell^2(\mathbb N_0)$ for every $r>0$,
+and $\tau_j(L_{r,k})$ is positive and continuous on every compact
+subinterval of $(0,1)$. Thus \eqref{eq:quantitative-rough} proves
+\eqref{eq:strict-eigenvalues}.
+
+Finally, let $E>0$. If $N_\Omega(E)=0$, then \eqref{eq:polya} is
+immediate. Otherwise put $M=N_\Omega(E)$. Since
+$\lambda_M(\Omega)\le E$, the strict eigenvalue inequality gives
+\[
+ 4\pi M<|\Omega|\lambda_M(\Omega)\le|\Omega|E.
+\]
+This proves \eqref{eq:polya} and completes the proof.
+\end{proof}
+
+The remainder in \eqref{eq:quantitative-rough} depends on the domain,
+the chosen conformal parametrization, and the index. Its positivity
+is sufficient for the strict inequality; no uniform lower bound
+in terms of the index alone is asserted here.
+
+\section{Lean formalization}\label{sec:lean-formalization}
+
+The eigenvalue assertion of Theorem~\ref{thm:main} has a Lean
+formalization in the single source file \texttt{Main.lean}, with final
+declaration \texttt{main}. The formalization was produced with the
+assistance of Aristotle. The development defines the Dirichlet
+eigenvalues by a min--max formula over smooth compactly supported real
+functions. We state its conclusion precisely and prove that this
+definition gives the eigenvalues of the self-adjoint operator used in
+the Introduction. This identification also yields the counting-function
+assertion of Theorem~\ref{thm:main}.
+
+\subsection{The statement verified in Lean}
+
+Identify $\mathbb C$ with $\mathbb R^2$ by $x+iy\leftrightarrow(x,y)$,
+with the Euclidean norm and two-dimensional Lebesgue measure. For an
+open set $\Omega\subset\mathbb C$, put
+\[
+ \mathcal C(\Omega)=
+ \{u\in C^\infty(\mathbb R^2;\mathbb R):
+       \operatorname{supp}u\text{ is compact and contained in }\Omega\}.
+\]
+For $0\ne u\in\mathcal C(\Omega)$, define
+\begin{equation}\label{eq:lean-rayleigh}
+ \begin{aligned}
+ R(u)&=\frac{\displaystyle\int_{\mathbb R^2}|\nabla u|^2}
+             {\displaystyle\int_{\mathbb R^2}|u|^2},\\
+ \widehat\lambda_j(\Omega)&=
+ \inf_{\substack{V\subset\mathcal C(\Omega)\text{ real linear}\\
+                  \dim_{\mathbb R}V=j}}
+       \sup_{0\ne u\in V}R(u)\quad(j\ge1).
+ \end{aligned}
+\end{equation}
+The functions in $\mathcal C(\Omega)$ are exactly the zero extensions
+of $C_c^\infty(\Omega;\mathbb R)$, so the integrals in
+\eqref{eq:lean-rayleigh} can equally be taken over $\Omega$.
+
+These objects are named \texttt{testFunctions},
+\texttt{dirichletEnergy}, \texttt{l2NormSq}, \texttt{rayleigh}, and
+\texttt{dirichletEigenvalue} in the source. The energy is expressed
+using the squared operator norm of the real derivative
+$Du(z):\mathbb R^2\to\mathbb R$. Its normalization is the usual one:
+\[
+ \|Du(z)\|_{\mathrm{op}}^2
+   =|\partial_xu(z)|^2+|\partial_yu(z)|^2=|\nabla u(z)|^2.
+\]
+In particular, there is no change of constant in the Rayleigh quotient.
+The infimum and supremum are taken in $[0,\infty]$, Lean's
+\texttt{ENNReal}. The dimension condition is implemented by
+\texttt{Module.finrank}; since $j\ge1$, it specifies a
+finite-dimensional space of dimension $j$.
+
+\begin{theorem}[The Lean declaration \texttt{main}]
+\label{thm:lean-main}
+Let $\Omega\subset\mathbb C$ be open and bounded, and assume that its
+subspace topology satisfies \texttt{SimplyConnectedSpace}. Then, for
+every integer $j\ge1$,
+\begin{equation}\label{eq:lean-main}
+ \iota(4\pi j)<\operatorname{vol}(\Omega)\,
+                         \widehat\lambda_j(\Omega)
+ \quad\text{in }[0,\infty],
+\end{equation}
+where $\iota$ is the usual embedding of nonnegative real numbers into
+$[0,\infty]$ and $\operatorname{vol}(\Omega)$ is Lebesgue measure,
+regarded as an extended nonnegative real number.
+\end{theorem}
+
+Here \texttt{SimplyConnectedSpace} includes nonemptiness and path
+connectedness, together with the homotopy condition for simple
+connectedness. On an open subset of the plane these are precisely the
+domain hypotheses in Theorem~\ref{thm:main}. The declaration has no
+boundary regularity hypothesis. Its proof is supplied in the Lean file.
+
+\subsection{Identification with the Dirichlet spectrum}
+
+\begin{lemma}\label{lem:lean-spectral-identification}
+For every bounded nonempty open set $\Omega\subset\mathbb R^2$ and
+every $j\ge1$, the quantity in \eqref{eq:lean-rayleigh} is finite and
+\begin{equation}\label{eq:lean-spectral-identification}
+ \widehat\lambda_j(\Omega)=\lambda_j(\Omega).
+\end{equation}
+The equality respects multiplicities and requires no boundary
+regularity.
+\end{lemma}
+
+\begin{proof}
+First work over the real scalars. By definition,
+$H_0^1(\Omega;\mathbb R)$ is the closure of
+$C_c^\infty(\Omega;\mathbb R)$ in the $H^1$ norm. Choose a ball $B$
+containing $\overline\Omega$. Zero extension embeds this space
+isometrically into $H_0^1(B;\mathbb R)$. The Poincar\'e inequality and
+the compact embedding on $B$ imply the Poincar\'e inequality and
+compact embedding into $L^2(\Omega)$ on $\Omega$. Hence the Dirichlet
+operator on $\Omega$ is positive and has compact resolvent. In particular,
+its eigenfunctions can be chosen as a real $L^2$-orthonormal basis
+$u_1,u_2,\ldots$, with positive eigenvalues
+$\lambda_1\le\lambda_2\le\cdots\to\infty$. The form min--max
+principle gives
+\begin{equation}\label{eq:lean-form-minmax}
+ \lambda_j=
+ \inf_{\substack{W\subset H_0^1(\Omega;\mathbb R)\\
+                   \dim_{\mathbb R}W=j}}
+ \sup_{0\ne u\in W}
+       \frac{q_\Omega[u]}{\|u\|_{L^2(\Omega)}^2}.
+\end{equation}
+Since $\mathcal C(\Omega)$ restricts into $H_0^1(\Omega;\mathbb R)$,
+\eqref{eq:lean-form-minmax} immediately implies
+$\lambda_j\le\widehat\lambda_j$.
+
+For the reverse inequality, fix $j$ and choose
+$\phi_{a,n}\in C_c^\infty(\Omega;\mathbb R)$ with
+$\phi_{a,n}\to u_a$ in $H^1(\Omega)$ for $1\le a\le j$. Define the
+real symmetric $j\times j$ matrices
+\[
+ (M_n)_{ab}=\int_\Omega\phi_{a,n}\phi_{b,n},\qquad
+ (A_n)_{ab}=\int_\Omega\nabla\phi_{a,n}\cdot\nabla\phi_{b,n}.
+\]
+Orthonormality and the weak eigenvalue equations imply
+\[
+ M_n\longrightarrow I_j,\qquad
+ A_n\longrightarrow D_j:=\operatorname{diag}(\lambda_1,\ldots,\lambda_j)
+\]
+in matrix operator norm. Put
+$\delta_n=\max\{\|M_n-I_j\|_{\mathrm{op}},
+                 \|A_n-D_j\|_{\mathrm{op}}\}\to0$.
+For all sufficiently large $n$, $\delta_n<1$, and every
+$c\in\mathbb R^j$ satisfies
+\[
+ c^{\mathsf T}M_nc\ge(1-\delta_n)|c|^2,\qquad
+ c^{\mathsf T}A_nc\le(\lambda_j+\delta_n)|c|^2.
+\]
+Consequently the $\phi_{a,n}$ are linearly independent. Their zero
+extensions span an admissible $j$-dimensional space $V_n$ in
+\eqref{eq:lean-rayleigh}, and
+\[
+ \widehat\lambda_j
+ \le\sup_{0\ne u\in V_n}R(u)
+ \le\frac{\lambda_j+\delta_n}{1-\delta_n}.
+\]
+Letting $n\to\infty$ proves finiteness and
+$\widehat\lambda_j\le\lambda_j$, hence equality.
+
+Finally, the complex Dirichlet operator is the complexification of
+the real one. The form has real coefficients and restricts to the
+real Dirichlet form on real-valued functions; complex conjugation
+preserves each eigenspace. If $E_\lambda$ is a complex eigenspace and
+$E_\lambda^{\mathbb R}$ its real-valued part, then
+$E_\lambda=E_\lambda^{\mathbb R}+iE_\lambda^{\mathbb R}$ with a
+unique decomposition. Thus
+$\dim_{\mathbb C}E_\lambda=\dim_{\mathbb R}E_\lambda^{\mathbb R}$.
+The real and complex eigenvalue lists therefore have the same
+multiplicities. This proves the assertion for the convention in the
+Introduction as well.
+\end{proof}
+
+\subsection{Equivalence with the main theorem}
+
+\begin{proposition}\label{prop:lean-main-equivalence}
+Under the identification $\mathbb C\simeq\mathbb R^2$, the statement
+of \texttt{main} is equivalent to the eigenvalue assertion
+\eqref{eq:strict-eigenvalues} of Theorem~\ref{thm:main}. For each
+domain under consideration, that assertion is also equivalent to
+the counting-function assertion \eqref{eq:polya}.
+\end{proposition}
+
+\begin{proof}
+The identification is a real linear isometry preserving Lebesgue
+measure, so $\operatorname{vol}(\Omega)=\iota(|\Omega|)$.
+The hypotheses give $0<|\Omega|<\infty$. By
+Lemma~\ref{lem:lean-spectral-identification}, all the variational
+values are finite and equal to the positive Dirichlet eigenvalues.
+The embedding $\iota$ preserves products and strictly preserves
+order on nonnegative finite numbers. Thus \eqref{eq:lean-main} is
+equivalent, in both directions, to
+$4\pi j<|\Omega|\lambda_j(\Omega)$ for every $j\ge1$.
+
+For completeness, suppose this eigenvalue inequality holds and fix
+$E>0$. The number $M=N_\Omega(E)$ is finite since
+$\lambda_j(\Omega)\to\infty$. If $M=0$, the counting inequality
+follows from $|\Omega|E>0$. Otherwise,
+\[
+ 4\pi M<|\Omega|\lambda_M(\Omega)\le|\Omega|E,
+\]
+which gives \eqref{eq:polya}. Conversely, if \eqref{eq:polya} holds
+for every $E>0$, set $E=\lambda_j(\Omega)$. The convention of counting
+eigenvalues at $E$, including multiplicities, gives
+\[
+ j\le N_\Omega(\lambda_j(\Omega))
+   <\frac{|\Omega|\lambda_j(\Omega)}{4\pi}.
+\]
+This proves \eqref{eq:strict-eigenvalues} and the equivalence.
+\end{proof}
+
+The machine-checked declaration is the variational inequality in
+Theorem~\ref{thm:lean-main}. The spectral identification in
+Lemma~\ref{lem:lean-spectral-identification} and the counting-function
+deduction above are mathematical proofs in this paper; they are not
+additional declarations in the accompanying Lean development. Thus the
+formalized variational theorem has exactly the mathematical content of
+Theorem~\ref{thm:main}, with the correspondence made explicit here.
+
+\subsection{Version and verification}
+
+The source imports \texttt{Mathlib} and was successfully compiled
+locally with toolchain \texttt{leanprover/lean4:v4.28.0} and the
+\texttt{mathlib} revision
+\begin{verbatim}
+8f9d9cff6bd728b17a24e163c9402775d9e6a365
+\end{verbatim}
+using \texttt{lake build +RequestProject.Main} in the accompanying
+project. The SHA-256 checksum of the verified \texttt{Main.lean} is
+\begin{verbatim}
+eeb626df2c7cf25ce65cbd466f4eedc43b92a557421c3ebbabf8eeef481a97a5
+\end{verbatim}
+The file concludes with \texttt{\#show\_unused main} and
+\texttt{\#print axioms main}. The former reports
+\texttt{No unused definitions}, and the latter reports exactly
+\begin{verbatim}
+'main' depends on axioms: [propext, Classical.choice, Quot.sound]
+\end{verbatim}
+These are the usual propositional extensionality, classical choice,
+and quotient soundness principles used by Lean's classical mathematics
+\cite{LeanAxioms}. In particular, \texttt{main} does not depend on
+\texttt{sorryAx} or any additional axiom. The source contains no
+\texttt{sorry}, \texttt{admit}, or \texttt{native\_decide} proof steps.
+
+\begin{thebibliography}{99}
+
+\bibitem{Berezin}
+F.~A. Berezin,
+\emph{Covariant and contravariant symbols of operators},
+Math. USSR-Izv. \textbf{6} (1972), 1117--1151.
+
+\bibitem{CK}
+D. Colton and R. Kress,
+\emph{On the denseness of Herglotz wave functions and electromagnetic
+Herglotz pairs in Sobolev spaces},
+Math. Methods Appl. Sci. \textbf{24} (2001), 1289--1303.
+
+\bibitem{EP}
+J.-P. Eckmann and C.-A. Pillet,
+\emph{Spectral duality for planar billiards},
+Comm. Math. Phys. \textbf{170} (1995), 283--313.
+
+\bibitem{Fan}
+K. Fan,
+\emph{On a theorem of Weyl concerning eigenvalues of linear
+transformations. I},
+Proc. Natl. Acad. Sci. USA \textbf{35} (1949), 652--655.
+
+\bibitem{FLPSballs}
+N. Filonov, M. Levitin, I. Polterovich, and D.~A. Sher,
+\emph{P\'olya's conjecture for Euclidean balls},
+Invent. Math. \textbf{234} (2023), 129--169.
+
+\bibitem{FLPSannuli}
+N. Filonov, M. Levitin, I. Polterovich, and D.~A. Sher,
+\emph{P\'olya's conjecture for Dirichlet eigenvalues of annuli},
+J. Lond. Math. Soc. (2) \textbf{113} (2026), e70425.
+
+\bibitem{FS}
+P. Freitas and I. Salavessa,
+\emph{Families of non-tiling domains satisfying P\'olya's conjecture},
+J. Math. Phys. \textbf{64} (2023), 121503.
+
+\bibitem{Kato}
+T. Kato,
+\emph{Perturbation Theory for Linear Operators},
+2nd ed., reprint, Classics in Mathematics,
+Springer-Verlag, Berlin, 1995.
+
+\bibitem{LiYau}
+P. Li and S.-T. Yau,
+\emph{On the Schr\"odinger equation and the eigenvalue problem},
+Comm. Math. Phys. \textbf{88} (1983), 309--318.
+
+\bibitem{LeanAxioms}
+The Lean developers,
+\emph{The Lean Language Reference}, Section~8, Axioms,
+\url{https://lean-lang.org/doc/reference/latest/Axioms/}
+(accessed 3 October 2026).
+
+\bibitem{Polya54}
+G. P\'olya,
+\emph{Mathematics and Plausible Reasoning},
+Vols.~I--II, Princeton University Press, Princeton, NJ, 1954.
+
+\bibitem{Polya61}
+G. P\'olya,
+\emph{On the eigenvalues of vibrating membranes},
+Proc. London Math. Soc. (3) \textbf{11} (1961), 419--433.
+
+\bibitem{Weyl}
+H. Weyl,
+\emph{Das asymptotische Verteilungsgesetz der Eigenwerte linearer
+partieller Differentialgleichungen (mit einer Anwendung auf die
+Theorie der Hohlraumstrahlung)},
+Math. Ann. \textbf{71} (1912), 441--479.
+
+\end{thebibliography}
+\end{document}

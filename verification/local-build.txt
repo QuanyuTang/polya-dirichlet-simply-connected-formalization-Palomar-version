@@ -1,0 +1,6 @@
+Lean (version 4.28.0, x86_64-w64-windows-gnu, commit 7e01a1bf5c70fc6167d49c345d3bf80596e9a79b, Release)
+Started: 2026-10-03T12:48:59.4720533-03:00
+ℹ [8026/8026] Built RequestProject.Main (1036s)
+info: RequestProject/Main.lean:21894:0: No unused definitions
+info: RequestProject/Main.lean:21896:0: 'main' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (8026 jobs).

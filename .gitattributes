@@ -1,0 +1,14 @@
+* text=auto
+
+# Preserve the verified Lean file's exact bytes and SHA-256 across platforms.
+*.lean -text
+
+*.md text eol=lf
+*.tex text eol=lf
+*.toml text eol=lf
+*.json text eol=lf
+lean-toolchain text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+verification/*.txt text eol=lf
+verification/SHA256SUMS text eol=lf

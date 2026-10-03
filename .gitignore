@@ -1,0 +1,17 @@
+# Lean dependencies and generated build output
+.lake/
+*.olean
+*.ilean
+
+# LaTeX auxiliary files
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# Operating-system files
+.DS_Store
+Thumbs.db
