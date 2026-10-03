@@ -1029,6 +1029,10 @@ definition gives the eigenvalues of the self-adjoint operator used in
 the Introduction. This identification also yields the counting-function
 assertion of Theorem~\ref{thm:main}.
 
+The Lean source and the pinned project configuration are maintained in
+the accompanying GitHub repository.\footnote{\url{https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization}.
+The repository is currently private; access must be granted by its owner.}
+
 \subsection{The statement verified in Lean}
 
 Identify $\mathbb C$ with $\mathbb R^2$ by $x+iy\leftrightarrow(x,y)$,
@@ -1055,7 +1059,8 @@ of $C_c^\infty(\Omega;\mathbb R)$, so the integrals in
 \eqref{eq:lean-rayleigh} can equally be taken over $\Omega$.
 
 These objects are named \texttt{testFunctions},
-\texttt{dirichletEnergy}, \texttt{l2NormSq}, \texttt{rayleigh}, and
+\texttt{dirichletEnergy}, \texttt{l2NormSq},\\
+\texttt{rayleigh}, and
 \texttt{dirichletEigenvalue} in the source. The energy is expressed
 using the squared operator norm of the real derivative
 $Du(z):\mathbb R^2\to\mathbb R$. Its normalization is the usual one:

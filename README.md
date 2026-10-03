@@ -38,13 +38,18 @@ The formalization was produced with the assistance of Aristotle.
 | `lakefile.toml` | Lean project and mathlib dependency configuration |
 | `lake-manifest.json` | Exact dependency revisions |
 | `paper/D_simply_connected_strict_v7.tex` | Manuscript with the spectral identification and formalization section |
+| `paper/D_simply_connected_strict_v7.pdf` | Compiled manuscript PDF |
 | `verification/Audit.lean` | Prints the checked theorem's type and its axioms using the built module |
 | `verification/local-build.txt` | Recorded output of the successful local Lean 4.28.0 build |
 | `verification/SHA256SUMS` | SHA-256 checksum of the verified proof source |
 
-The manuscript is supplied as LaTeX source. PDF compilation has not yet been
-validated for this snapshot because the local built-in LaTeX compiler reported
-a platform-directory error.
+Both the LaTeX source and its compiled PDF are supplied in `paper/`.
+The PDF was built with pdfLaTeX and latexmk from TeX Live 2022. To rebuild it,
+run the following command from the `paper/` directory:
+
+```text
+latexmk -pdf -interaction=nonstopmode -halt-on-error D_simply_connected_strict_v7.tex
+```
 
 ## Reproduce the Lean check
 
