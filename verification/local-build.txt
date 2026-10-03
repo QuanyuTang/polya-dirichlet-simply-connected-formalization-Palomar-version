@@ -1,6 +1,50 @@
 Lean (version 4.28.0, x86_64-w64-windows-gnu, commit 7e01a1bf5c70fc6167d49c345d3bf80596e9a79b, Release)
-Started: 2026-10-03T12:48:59.4720533-03:00
-ℹ [8026/8026] Built RequestProject.Main (1036s)
-info: RequestProject/Main.lean:21894:0: No unused definitions
-info: RequestProject/Main.lean:21896:0: 'main' depends on axioms: [propext, Classical.choice, Quot.sound]
+Started: 2026-10-03T16:03:41.758896-03:00
+Command: lake build +RequestProject.Main
+ℹ [8026/8026] Built RequestProject.Main (1271s)
+info: RequestProject/Main.lean:26703:0: 'DirichletBridge.dirichletEigenvalue_eq_spectral' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RequestProject/Main.lean:26704:0: 'DirichletBridge.spectralDirichletEigenvalue_multiplicity_complex' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: RequestProject/Main.lean:26705:0: 'DirichletBridge.complexDirichletOperator_form_representation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: RequestProject/Main.lean:26706:0: 'DirichletBridge.complexDirichletOperator_selfAdjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RequestProject/Main.lean:26707:0: 'DirichletBridge.complex_Dirichlet_eigenvalue_iff_indexed' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RequestProject/Main.lean:26708:0: 'DirichletBridge.complexDirichletOperator_eigenvalue_positive_real' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: RequestProject/Main.lean:26709:0: 'DirichletBridge.complexEnergyForm_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RequestProject/Main.lean:26710:0: 'DirichletBridge.complexH01_norm_sq' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RequestProject/Main.lean:26711:0: 'DirichletBridge.complexSmoothCoreJet_dense' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RequestProject/Main.lean:26712:0: 'main_counting' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RequestProject/Main.lean:26713:0: 'main' depends on axioms: [propext, Classical.choice, Quot.sound]
 Build completed successfully (8026 jobs).
+Finished: 2026-10-03T16:26:39.184704-03:00
+Exit code: 0
+
+Command: lake env lean verification/Audit.lean
+main (Ω : Set ℂ) (hopen : IsOpen Ω) (hbdd : Bornology.IsBounded Ω) (hsc : SimplyConnectedSpace ↑Ω) (j : ℕ)
+  (hj : 1 ≤ j) :
+  4 * Real.pi * ↑j < (MeasureTheory.volume Ω).toReal * DirichletBridge.spectralDirichletEigenvalue Ω hbdd j
+main_counting (Ω : Set ℂ) (hopen : IsOpen Ω) (hbdd : Bornology.IsBounded Ω) (hsc : SimplyConnectedSpace ↑Ω) (E : ℝ)
+  (hE : 0 < E) :
+  ↑(DirichletBridge.spectralDirichletCountingFunction Ω hbdd E) < (MeasureTheory.volume Ω).toReal * E / (4 * Real.pi)
+'main' depends on axioms: [propext, Classical.choice, Quot.sound]
+'main_counting' depends on axioms: [propext, Classical.choice, Quot.sound]
+'DirichletBridge.dirichletEigenvalue_eq_spectral' depends on axioms: [propext, Classical.choice, Quot.sound]
+'DirichletBridge.spectralDirichletEigenvalue_multiplicity_complex' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'DirichletBridge.complexDirichletOperator_form_representation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'DirichletBridge.complexDirichletOperator_selfAdjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'DirichletBridge.complex_Dirichlet_eigenvalue_iff_indexed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'DirichletBridge.complexEnergyForm_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+'DirichletBridge.complexH01_norm_sq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'DirichletBridge.complexSmoothCoreJet_dense' depends on axioms: [propext, Classical.choice, Quot.sound]
+'DirichletBridge.complexDirichletOperator_eigenvalue_positive_real' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Audit exit code: 0

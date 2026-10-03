@@ -1,51 +1,61 @@
 # Strict Dirichlet Pólya inequality: Lean formalization
 
-This repository contains a single-file Lean formalization of the strict
-Dirichlet Pólya inequality for bounded, nonempty, simply connected planar
-domains, together with the accompanying manuscript.
+This repository contains a single-file Lean proof of the strict Dirichlet
+Pólya inequality for bounded, nonempty, simply connected planar domains,
+together with the accompanying manuscript.
 
 ## Mathematical statement and scope
 
-The declaration `main` in `RequestProject/Main.lean` proves, for every
-bounded open set `Omega : Set Complex` satisfying `SimplyConnectedSpace Omega`
-and every natural number `j >= 1`,
+The declaration `main` in `RequestProject/Main.lean` proves, for every bounded
+open `Omega : Set Complex` satisfying `SimplyConnectedSpace Omega` and every
+natural number `j >= 1`,
 
 ```text
-4 * pi * j < area(Omega) * lambda_j_var(Omega).
+4 * pi * j < area(Omega) * lambda_j(Omega).
 ```
 
-Here `lambda_j_var` denotes the quantity named `dirichletEigenvalue` in
-the source. It is the infimum, over j-dimensional real subspaces of smooth
-compactly supported test functions on Omega, of the supremum of the Dirichlet
-Rayleigh quotient over their nonzero elements. The formal inequality is
-expressed in `ENNReal`, the extended nonnegative real numbers.
+Here `lambda_j` is `DirichletBridge.spectralDirichletEigenvalue`: the positive
+eigenvalues, in nondecreasing order and with multiplicity, of the actual
+Dirichlet operator. They are defined independently of the smooth-core min–max,
+using finite orthonormal eigenfamilies of its compact inverse. `main_counting`
+proves the inclusive counting inequality `N_Omega(E) < area(Omega) * E / (4*pi)`
+for every real `E > 0`.
 
-The manuscript's section **Lean formalization** proves that these variational
-values equal the eigenvalues of the form-defined Dirichlet Laplacian, including
-multiplicities, without boundary regularity assumptions. It also proves the
-equivalence with the spectral counting inequality. These identification and
-counting arguments are mathematical proofs in the manuscript; they are not
-additional theorems formalized in the Lean artifact.
+The original Aristotle variational theorem is retained as
+`strict_polya_variational`. The added bridge, developed with Codex, proves:
 
-The formalization was produced with the assistance of Aristotle.
+- The real and complex `H_0^1` domains are completions of the actual smooth
+  compactly supported cores, with the usual value and weak gradients.
+- The closed form is the gradient energy integral on `Omega`; the associated
+  real and complex Dirichlet operators are self-adjoint, with compact inverse.
+- The original smooth-core min–max equals the independently defined ordered
+  operator eigenvalues. These tend to infinity and exhaust the positive
+  eigenvalues; occurrence counts equal real and complex eigenspace dimensions.
+- The spectral counting and indexed inequalities are equivalent, with the
+  endpoint included and repeated eigenvalues counted with multiplicity.
+
+These results are proved in Lean without boundary regularity assumptions.
+The manuscript's **Lean formalization** section describes their correspondence
+with the paper's main theorem. The development uses finite spectral families;
+it does not provide a separate infinite eigenbasis expansion theorem or a
+theorem about the full operator `spectrum` set.
 
 ## Files
 
 | File | Purpose |
 | --- | --- |
-| `RequestProject/Main.lean` | Complete proof development; final theorem `main` |
+| `RequestProject/Main.lean` | Single proof source; final theorems `main` and `main_counting` |
 | `lean-toolchain` | Pins Lean to `leanprover/lean4:v4.28.0` |
 | `lakefile.toml` | Lean project and mathlib dependency configuration |
 | `lake-manifest.json` | Exact dependency revisions |
-| `paper/D_simply_connected_strict_v7.tex` | Manuscript with the spectral identification and formalization section |
+| `paper/D_simply_connected_strict_v7.tex` | Manuscript and formalization section |
 | `paper/D_simply_connected_strict_v7.pdf` | Compiled manuscript PDF |
-| `verification/Audit.lean` | Prints the checked theorem's type and its axioms using the built module |
-| `verification/local-build.txt` | Recorded output of the successful local Lean 4.28.0 build |
+| `verification/Audit.lean` | Checks the public statements and bridge axiom dependencies |
+| `verification/local-build.txt` | Successful local Lean 4.28.0 build output |
 | `verification/SHA256SUMS` | SHA-256 checksum of the verified proof source |
 
-Both the LaTeX source and its compiled PDF are supplied in `paper/`.
-The PDF was built with pdfLaTeX and latexmk from TeX Live 2022. To rebuild it,
-run the following command from the `paper/` directory:
+Both the LaTeX source and compiled PDF are supplied in `paper/`. To rebuild
+the PDF, run from that directory (the recorded build uses TeX Live 2022):
 
 ```text
 latexmk -pdf -interaction=nonstopmode -halt-on-error D_simply_connected_strict_v7.tex
@@ -54,8 +64,8 @@ latexmk -pdf -interaction=nonstopmode -halt-on-error D_simply_connected_strict_v
 ## Reproduce the Lean check
 
 Install [Git](https://git-scm.com/) and
-[elan](https://github.com/leanprover/elan), the Lean toolchain manager.
-After cloning this repository, open a terminal in its root directory and run:
+[elan](https://github.com/leanprover/elan). After cloning the repository, run
+these commands in its root directory:
 
 ```text
 elan toolchain install leanprover/lean4:v4.28.0
@@ -65,47 +75,44 @@ lake build +RequestProject.Main
 lake env lean verification/Audit.lean
 ```
 
-The version command should report **Lean 4.28.0**. The local `lean-toolchain`
-file selects this version for the project; no change to the global default
-toolchain is needed. `lake exe cache get` downloads precompiled dependency
-artifacts. The proof file is large, and checking it can take many minutes.
+The version command should report **Lean 4.28.0**. `lean-toolchain` selects this
+version for the project. `lake exe cache get` downloads precompiled dependency
+artifacts. The single proof source is large and can take many minutes to check.
 
-The audit file imports the built proof module and prints the type of `main`
-and its transitive axiom dependencies. The expected axiom report is:
+The audit reports only Lean's three standard axioms for classical mathematics:
 
 ```text
-'main' depends on axioms: [propext, Classical.choice, Quot.sound]
+[propext, Classical.choice, Quot.sound]
 ```
 
-These are Lean's standard axioms for classical mathematics. There is no
-`sorryAx` or additional axiom in this report. The proof source contains no
-`sorry`, `admit`, or `native_decide` proof steps.
+This is checked for both final inequalities and for the semantic bridge
+theorems, including the complex form, its smooth core, and operator
+representation. None of these results depends on `sorryAx` or an additional
+axiom. The source contains no `sorry`, `admit`, or `native_decide` proof steps.
 
 ## Verified snapshot
 
 - Local verification date: **2026-10-03**.
-- Lean: **4.28.0**, compiler commit
-  `7e01a1bf5c70fc6167d49c345d3bf80596e9a79b`.
-- mathlib revision: `8f9d9cff6bd728b17a24e163c9402775d9e6a365`,
-  pinned in `lake-manifest.json`.
-- The recorded build reports `Build completed successfully (8026 jobs)`,
-  `No unused definitions`, and exactly the three axioms listed above.
+- Lean: **4.28.0**, compiler commit `7e01a1bf5c70fc6167d49c345d3bf80596e9a79b`.
+- mathlib revision: `8f9d9cff6bd728b17a24e163c9402775d9e6a365`.
+- The merged single source passed `lake build +RequestProject.Main`; see
+  `verification/local-build.txt` for the recorded output.
 - SHA-256 of `RequestProject/Main.lean`:
 
 ```text
-eeb626df2c7cf25ce65cbd466f4eedc43b92a557421c3ebbabf8eeef481a97a5
+c8cda85243508e881a38b7241b422938e7b221b56035285b348a61ba466d4a53
 ```
 
-The Lean source is retained byte-for-byte from the verified single-file
-export. Downloaded dependencies and generated build artifacts are excluded
-from version control. No independent external proof checker was run for this
-snapshot.
+Downloaded dependencies and generated build artifacts are excluded from
+version control. Verification uses the pinned Lean compiler and kernel;
+no independent implementation of Lean's kernel checked this snapshot.
 
 ## 中文说明
 
-本项目固定使用 **Lean 4.28.0**。主要证明在 `RequestProject/Main.lean` 中，
-最终定理名是 `main`。论文第七节说明它证明的变分形式为什么与论文主定理等价。
+本项目固定使用 **Lean 4.28.0**。`RequestProject/Main.lean` 是单文件证明。
+原变分结论保留为 `strict_polya_variational`；新增的 `main` 证明实际 Dirichlet
+特征值的严格不等式，`main_counting` 证明包含端点、计入重数的谱计数不等式。
 
-本地编译已成功，最终定理仅依赖 `propext`、`Classical.choice`、`Quot.sound`。
-下载后在项目根目录执行上面的命令即可复核；`verification/Audit.lean` 用于
-显示最终定理的类型和公理依赖。
+光滑核心、闭形式、实际算子、谱值识别及实复重数的桥接均已有 Lean 证明。
+论文第七节和 PDF 已同步。最终定理及关键桥接定理仅依赖标准三项公理。
+执行上面的构建及审计命令即可复核。

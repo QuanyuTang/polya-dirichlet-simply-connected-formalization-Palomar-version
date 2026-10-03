@@ -1,4 +1,16 @@
 import RequestProject.Main
 
 #check main
+#check main_counting
+
 #print axioms main
+#print axioms main_counting
+#print axioms DirichletBridge.dirichletEigenvalue_eq_spectral
+#print axioms DirichletBridge.spectralDirichletEigenvalue_multiplicity_complex
+#print axioms DirichletBridge.complexDirichletOperator_form_representation
+#print axioms DirichletBridge.complexDirichletOperator_selfAdjoint
+#print axioms DirichletBridge.complex_Dirichlet_eigenvalue_iff_indexed
+#print axioms DirichletBridge.complexEnergyForm_complete
+#print axioms DirichletBridge.complexH01_norm_sq
+#print axioms DirichletBridge.complexSmoothCoreJet_dense
+#print axioms DirichletBridge.complexDirichletOperator_eigenvalue_positive_real
