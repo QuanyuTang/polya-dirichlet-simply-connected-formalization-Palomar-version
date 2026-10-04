@@ -4,6 +4,11 @@ This repository contains a single-file Lean proof of the strict Dirichlet
 Pólya inequality for bounded, nonempty, simply connected planar domains,
 together with the accompanying manuscript.
 
+[Lean source](RequestProject/Main.lean) ·
+[Paper PDF](paper/D_simply_connected_strict_v7.pdf) ·
+[Paper source](paper/D_simply_connected_strict_v7.tex) ·
+[Automatic verification](https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization/actions/workflows/lean.yml)
+
 ## Mathematical statement and scope
 
 The declaration `main` in `RequestProject/Main.lean` proves, for every bounded
@@ -50,9 +55,10 @@ theorem about the full operator `spectrum` set.
 | `lake-manifest.json` | Exact dependency revisions |
 | `paper/D_simply_connected_strict_v7.tex` | Manuscript and formalization section |
 | `paper/D_simply_connected_strict_v7.pdf` | Compiled manuscript PDF |
-| `verification/Audit.lean` | Checks the public statements and bridge axiom dependencies |
+| `verification/Audit.lean` | Checks public statements and enforces 16 axiom audits |
 | `verification/local-build.txt` | Successful local Lean 4.28.0 build output |
 | `verification/SHA256SUMS` | SHA-256 checksum of the verified proof source |
+| `.github/workflows/lean.yml` | Rebuilds and audits the pinned proof on GitHub Actions |
 
 Both the LaTeX source and compiled PDF are supplied in `paper/`. To rebuild
 the PDF, run from that directory (the recorded build uses TeX Live 2022):
@@ -79,16 +85,37 @@ The version command should report **Lean 4.28.0**. `lean-toolchain` selects this
 version for the project. `lake exe cache get` downloads precompiled dependency
 artifacts. The single proof source is large and can take many minutes to check.
 
-The audit reports only Lean's three standard axioms for classical mathematics:
+The `#print axioms` commands at the end of `Main.lean` report only Lean's
+three standard axioms for classical mathematics:
 
 ```text
 [propext, Classical.choice, Quot.sound]
 ```
 
-This is checked for both final inequalities and for the semantic bridge
-theorems, including the complex form, its smooth core, and operator
-representation. None of these results depends on `sorryAx` or an additional
-axiom. The source contains no `sorry`, `admit`, or `native_decide` proof steps.
+`verification/Audit.lean` enforces these exact dependencies with 16
+`#guard_msgs` assertions. Successful guards are silent; an unexpected axiom
+list makes the audit fail. It also prints the types of the final theorems
+and the principal identification theorems for inspection.
+
+The checks cover both final inequalities and the semantic bridge, including
+the complex energy integral, the genuine smooth core, operator representation,
+multiplicities, divergence of the eigenvalues, and finite spectral counting.
+None of these results depends on `sorryAx` or an additional axiom. The proof
+source contains no `sorry`, `admit`, or `native_decide` proof steps.
+
+## Automatic verification
+
+The [Lean verification workflow](.github/workflows/lean.yml) runs on pushes
+and pull requests to `main`, and can also be started manually from GitHub's
+Actions tab. It uses the official [Lean action](https://github.com/leanprover/lean-action)
+with the toolchain and dependency revisions committed to this repository.
+
+Each run checks the source checksum, downloads the mathlib dependency cache,
+compiles `RequestProject.Main` on a fresh Ubuntu runner, and runs the guarded
+audit. Build warnings cause failure. The workflow also checks that verification
+has not changed tracked files. The action versions are pinned to commit hashes.
+After changing the proof source, rebuild and audit it before updating
+`verification/SHA256SUMS` and the verified snapshot below.
 
 ## Verified snapshot
 
@@ -115,4 +142,6 @@ no independent implementation of Lean's kernel checked this snapshot.
 
 光滑核心、闭形式、实际算子、谱值识别及实复重数的桥接均已有 Lean 证明。
 论文第七节和 PDF 已同步。最终定理及关键桥接定理仅依赖标准三项公理。
-执行上面的构建及审计命令即可复核。
+执行上面的构建及审计命令即可复核。审计文件包含 16 项断言，成功时不会
+逐项打印公理列表；出现意外依赖会直接报错。GitHub Actions 自动执行源码
+校验、固定版本构建及上述审计，结果可从仓库的 Actions 页面查看。

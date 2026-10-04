@@ -7,6 +7,7 @@
 *.tex text eol=lf
 *.toml text eol=lf
 *.json text eol=lf
+*.yml text eol=lf
 lean-toolchain text eol=lf
 .gitattributes text eol=lf
 .gitignore text eol=lf
