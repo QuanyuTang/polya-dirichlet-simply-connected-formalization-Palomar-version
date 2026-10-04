@@ -1019,279 +1019,46 @@ in terms of the index alone is asserted here.
 
 \section{Lean formalization}\label{sec:lean-formalization}
 
-Both assertions of Theorem~\ref{thm:main} are formalized in the single
-source file \texttt{Main.lean}. The final declarations \texttt{main} and
-\texttt{main\_counting} prove the indexed eigenvalue inequality and the
-inclusive spectral counting inequality, respectively. The original
-variational development was produced with the assistance of Aristotle;
-the operator and spectral bridge was developed with the assistance of
-Codex. We describe the variational statement, its identification with
-the actual Dirichlet operator, and the additional machine-checked bridge.
+Both assertions of Theorem~\ref{thm:main} have been formalized in Lean
+in the single source file \texttt{Main.lean}. The declarations
+\texttt{main} and \texttt{main\_counting} prove
+\eqref{eq:strict-eigenvalues} and \eqref{eq:polya}, respectively, for
+every bounded nonempty simply connected planar domain, without a
+boundary regularity assumption. The formalization identifies
+$\mathbb C$ with $\mathbb R^2$ using the usual Euclidean norm and
+two-dimensional Lebesgue measure.
 
-The Lean source and the pinned project configuration are maintained in
-the accompanying GitHub repository.\footnote{\url{https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization}.
-The repository is currently private; access must be granted by its owner.}
+The development constructs the real and complex spaces $H_0^1(\Omega)$
+from the smooth compactly supported core, and the self-adjoint
+Dirichlet operator associated with the closed gradient-energy form
+$q_\Omega[u]=\int_\Omega |\nabla u|^2$. Its positive eigenvalues are
+defined independently of the smooth-core min--max, using orthonormal
+eigenfamilies of the compact inverse. Lean proves that the two
+constructions agree, together with the nondecreasing ordering,
+divergence to infinity, and correct real and complex multiplicities.
+Thus the formalized counting function is precisely
+$N_\Omega(E)=\#\{j\ge1:\lambda_j(\Omega)\le E\}$, with the endpoint
+included and eigenvalues repeated according to multiplicity.
 
-\subsection{The statement verified in Lean}
-
-Identify $\mathbb C$ with $\mathbb R^2$ by $x+iy\leftrightarrow(x,y)$,
-with the Euclidean norm and two-dimensional Lebesgue measure. For an
-open set $\Omega\subset\mathbb C$, put
-\[
- \mathcal C(\Omega)=
- \{u\in C^\infty(\mathbb R^2;\mathbb R):
-       \operatorname{supp}u\text{ is compact and contained in }\Omega\}.
-\]
-For $0\ne u\in\mathcal C(\Omega)$, define
-\begin{equation}\label{eq:lean-rayleigh}
- \begin{aligned}
- R(u)&=\frac{\displaystyle\int_{\mathbb R^2}|\nabla u|^2}
-             {\displaystyle\int_{\mathbb R^2}|u|^2},\\
- \widehat\lambda_j(\Omega)&=
- \inf_{\substack{V\subset\mathcal C(\Omega)\text{ real linear}\\
-                  \dim_{\mathbb R}V=j}}
-       \sup_{0\ne u\in V}R(u)\quad(j\ge1).
- \end{aligned}
-\end{equation}
-The functions in $\mathcal C(\Omega)$ are exactly the zero extensions
-of $C_c^\infty(\Omega;\mathbb R)$, so the integrals in
-\eqref{eq:lean-rayleigh} can equally be taken over $\Omega$.
-
-These objects are named \texttt{testFunctions},
-\texttt{dirichletEnergy}, \texttt{l2NormSq},\\
-\texttt{rayleigh}, and
-\texttt{dirichletEigenvalue} in the source. The energy is expressed
-using the squared operator norm of the real derivative
-$Du(z):\mathbb R^2\to\mathbb R$. Its normalization is the usual one:
-\[
- \|Du(z)\|_{\mathrm{op}}^2
-   =|\partial_xu(z)|^2+|\partial_yu(z)|^2=|\nabla u(z)|^2.
-\]
-In particular, there is no change of constant in the Rayleigh quotient.
-The infimum and supremum are taken in $[0,\infty]$, Lean's
-\texttt{ENNReal}. The dimension condition is implemented by
-\texttt{Module.finrank}; since $j\ge1$, it specifies a
-finite-dimensional space of dimension $j$.
-
-\begin{theorem}[The original variational Lean declaration]
-\label{thm:lean-main}
-Let $\Omega\subset\mathbb C$ be open and bounded, and assume that its
-subspace topology satisfies \texttt{SimplyConnectedSpace}. Then, for
-every integer $j\ge1$,
-\begin{equation}\label{eq:lean-main}
- \iota(4\pi j)<\operatorname{vol}(\Omega)\,
-                         \widehat\lambda_j(\Omega)
- \quad\text{in }[0,\infty],
-\end{equation}
-where $\iota$ is the usual embedding of nonnegative real numbers into
-$[0,\infty]$ and $\operatorname{vol}(\Omega)$ is Lebesgue measure,
-regarded as an extended nonnegative real number.
-\end{theorem}
-
-Here \texttt{SimplyConnectedSpace} includes nonemptiness and path
-connectedness, together with the homotopy condition for simple
-connectedness. On an open subset of the plane these are precisely the
-domain hypotheses in Theorem~\ref{thm:main}. The declaration has no
-boundary regularity hypothesis. This variational theorem is named
-\texttt{strict\_polya\_variational} in the updated Lean file.
-
-\subsection{Identification with the Dirichlet spectrum}
-
-\begin{lemma}\label{lem:lean-spectral-identification}
-For every bounded nonempty open set $\Omega\subset\mathbb R^2$ and
-every $j\ge1$, the quantity in \eqref{eq:lean-rayleigh} is finite and
-\begin{equation}\label{eq:lean-spectral-identification}
- \widehat\lambda_j(\Omega)=\lambda_j(\Omega).
-\end{equation}
-The equality respects multiplicities and requires no boundary
-regularity.
-\end{lemma}
-
-\begin{proof}
-First work over the real scalars. By definition,
-$H_0^1(\Omega;\mathbb R)$ is the closure of
-$C_c^\infty(\Omega;\mathbb R)$ in the $H^1$ norm. Choose a ball $B$
-containing $\overline\Omega$. Zero extension embeds this space
-isometrically into $H_0^1(B;\mathbb R)$. The Poincar\'e inequality and
-the compact embedding on $B$ imply the Poincar\'e inequality and
-compact embedding into $L^2(\Omega)$ on $\Omega$. Hence the Dirichlet
-operator on $\Omega$ is positive and has compact resolvent. In particular,
-its eigenfunctions can be chosen as a real $L^2$-orthonormal basis
-$u_1,u_2,\ldots$, with positive eigenvalues
-$\lambda_1\le\lambda_2\le\cdots\to\infty$. The form min--max
-principle gives
-\begin{equation}\label{eq:lean-form-minmax}
- \lambda_j=
- \inf_{\substack{W\subset H_0^1(\Omega;\mathbb R)\\
-                   \dim_{\mathbb R}W=j}}
- \sup_{0\ne u\in W}
-       \frac{q_\Omega[u]}{\|u\|_{L^2(\Omega)}^2}.
-\end{equation}
-Since $\mathcal C(\Omega)$ restricts into $H_0^1(\Omega;\mathbb R)$,
-\eqref{eq:lean-form-minmax} immediately implies
-$\lambda_j\le\widehat\lambda_j$.
-
-For the reverse inequality, fix $j$ and choose
-$\phi_{a,n}\in C_c^\infty(\Omega;\mathbb R)$ with
-$\phi_{a,n}\to u_a$ in $H^1(\Omega)$ for $1\le a\le j$. Define the
-real symmetric $j\times j$ matrices
-\[
- (M_n)_{ab}=\int_\Omega\phi_{a,n}\phi_{b,n},\qquad
- (A_n)_{ab}=\int_\Omega\nabla\phi_{a,n}\cdot\nabla\phi_{b,n}.
-\]
-Orthonormality and the weak eigenvalue equations imply
-\[
- M_n\longrightarrow I_j,\qquad
- A_n\longrightarrow D_j:=\operatorname{diag}(\lambda_1,\ldots,\lambda_j)
-\]
-in matrix operator norm. Put
-$\delta_n=\max\{\|M_n-I_j\|_{\mathrm{op}},
-                 \|A_n-D_j\|_{\mathrm{op}}\}\to0$.
-For all sufficiently large $n$, $\delta_n<1$, and every
-$c\in\mathbb R^j$ satisfies
-\[
- c^{\mathsf T}M_nc\ge(1-\delta_n)|c|^2,\qquad
- c^{\mathsf T}A_nc\le(\lambda_j+\delta_n)|c|^2.
-\]
-Consequently the $\phi_{a,n}$ are linearly independent. Their zero
-extensions span an admissible $j$-dimensional space $V_n$ in
-\eqref{eq:lean-rayleigh}, and
-\[
- \widehat\lambda_j
- \le\sup_{0\ne u\in V_n}R(u)
- \le\frac{\lambda_j+\delta_n}{1-\delta_n}.
-\]
-Letting $n\to\infty$ proves finiteness and
-$\widehat\lambda_j\le\lambda_j$, hence equality.
-
-Finally, the complex Dirichlet operator is the complexification of
-the real one. The form has real coefficients and restricts to the
-real Dirichlet form on real-valued functions; complex conjugation
-preserves each eigenspace. If $E_\lambda$ is a complex eigenspace and
-$E_\lambda^{\mathbb R}$ its real-valued part, then
-$E_\lambda=E_\lambda^{\mathbb R}+iE_\lambda^{\mathbb R}$ with a
-unique decomposition. Thus
-$\dim_{\mathbb C}E_\lambda=\dim_{\mathbb R}E_\lambda^{\mathbb R}$.
-The real and complex eigenvalue lists therefore have the same
-multiplicities. This proves the assertion for the convention in the
-Introduction as well.
-\end{proof}
-
-\subsection{The machine-checked operator and spectral bridge}
-
-The identification in Lemma~\ref{lem:lean-spectral-identification} is
-also proved in Lean. The real space \texttt{H01} is constructed as the
-closure of the smooth-core value--gradient graph in the product of three
-real $L^2$ spaces. The development proves the weak derivative identities,
-injectivity of the value map, density of the smooth core, and the norm
-identity consisting of the $L^2$ mass and the two gradient terms. Thus the
-construction is the $H_0^1$ completion, including for rough domains.
-The corresponding complex space has the same norm identity and is the
-completion of the actual complex smooth compactly supported core.
-
-The real and complex energy forms are proved to be the integrals of
-the usual gradient products over $\Omega$. Poincar\'e coercivity yields
-the inverse operator by the form equation. Its partial inverse is the
-Dirichlet operator: the development proves the weak form representation
-of its domain and action, self-adjointness, and closedness. Compactness
-of the inclusion is proved for every bounded open set by scaling into
-the disk and a compactness estimate, without a boundary hypothesis.
-
-The ordered values \texttt{spectralDirichletEigenvalue} are defined
-independently of the min--max, from finite orthonormal eigenfamilies of
-the compact inverse. For $j\ge1$, Lean proves that they are positive, nondecreasing,
-tend to infinity, and exhaust the positive eigenvalues of the actual
-Dirichlet operators. The number of occurrences of each value equals the
-dimension of its eigenspace, over both $\mathbb R$ and $\mathbb C$.
-The theorem \texttt{dirichletEigenvalue\_eq\_spectral} proves
-the normalized numerical identification in
-\eqref{eq:lean-spectral-identification}; separate multiplicity theorems
-prove the occurrence counts for the real and complex operators.
-
-The final declaration \texttt{main} consequently states
-\[
- 4\pi j<|\Omega|\lambda_j(\Omega)\qquad(j\ge1)
-\]
-in the real numbers, with exactly the open, bounded, simply connected
-domain hypotheses. The declaration \texttt{main\_counting} states
-\[
- \#\{j\ge1:\lambda_j(\Omega)\le E\}
-       <\frac{|\Omega|}{4\pi}E\qquad(E>0).
-\]
-The count is finite and includes the endpoint and multiplicities.
-The equivalence between these indexed and counting inequalities is
-also proved in Lean.
-
-\subsection{Equivalence with the main theorem}
-
-\begin{proposition}\label{prop:lean-main-equivalence}
-Under the identification $\mathbb C\simeq\mathbb R^2$, the statement
-of \texttt{main} is the eigenvalue assertion
-\eqref{eq:strict-eigenvalues} of Theorem~\ref{thm:main}. For each
-domain under consideration, the original variational assertion
-\eqref{eq:lean-main} is equivalent to it, and the indexed assertion
-is equivalent to the counting-function assertion \eqref{eq:polya}.
-\end{proposition}
-
-\begin{proof}
-The identification is a real linear isometry preserving Lebesgue
-measure, so $\operatorname{vol}(\Omega)=\iota(|\Omega|)$.
-The hypotheses give $0<|\Omega|<\infty$. By
-Lemma~\ref{lem:lean-spectral-identification}, all the variational
-values are finite and equal to the positive Dirichlet eigenvalues.
-The embedding $\iota$ preserves products and strictly preserves
-order on nonnegative finite numbers. Thus \eqref{eq:lean-main} is
-equivalent, in both directions, to
-$4\pi j<|\Omega|\lambda_j(\Omega)$ for every $j\ge1$.
-
-For completeness, suppose this eigenvalue inequality holds and fix
-$E>0$. The number $M=N_\Omega(E)$ is finite since
-$\lambda_j(\Omega)\to\infty$. If $M=0$, the counting inequality
-follows from $|\Omega|E>0$. Otherwise,
-\[
- 4\pi M<|\Omega|\lambda_M(\Omega)\le|\Omega|E,
-\]
-which gives \eqref{eq:polya}. Conversely, if \eqref{eq:polya} holds
-for every $E>0$, set $E=\lambda_j(\Omega)$. The convention of counting
-eigenvalues at $E$, including multiplicities, gives
-\[
- j\le N_\Omega(\lambda_j(\Omega))
-   <\frac{|\Omega|\lambda_j(\Omega)}{4\pi}.
-\]
-This proves \eqref{eq:strict-eigenvalues} and the equivalence.
-\end{proof}
-
-The spectral identification and the counting-function deduction are
-therefore both mathematical proofs in this paper and machine-checked
-theorems in the accompanying Lean development. The final declarations
-\texttt{main} and \texttt{main\_counting} have the assertions of
-Theorem~\ref{thm:main} as their conclusions.
-
-\subsection{Version and verification}
-
-The source imports \texttt{Mathlib} and was successfully compiled
-locally with toolchain \texttt{leanprover/lean4:v4.28.0} and the
-\texttt{mathlib} revision
+The source was successfully checked with
+\texttt{leanprover/lean4:v4.28.0} and \texttt{mathlib} revision
 \begin{verbatim}
 8f9d9cff6bd728b17a24e163c9402775d9e6a365
 \end{verbatim}
-using \texttt{lake build +RequestProject.Main} in the accompanying
-project. The SHA-256 checksum of the verified \texttt{Main.lean} is
-\begin{verbatim}
-c8cda85243508e881a38b7241b422938e7b221b56035285b348a61ba466d4a53
-\end{verbatim}
-The file concludes with axiom audits of both final declarations and
-the semantic bridge, including the complex smooth core, closed form,
-operator representation, and spectral multiplicities. Each audit
-reports only the standard three axioms; in particular,
-\begin{verbatim}
-'main' depends on axioms: [propext, Classical.choice, Quot.sound]
-\end{verbatim}
-These are the usual propositional extensionality, classical choice,
-and quotient soundness principles used by Lean's classical mathematics
-\cite{LeanAxioms}. In particular, \texttt{main} does not depend on
-\texttt{sorryAx} or any additional axiom. The source contains no
-\texttt{sorry}, \texttt{admit}, or \texttt{native\_decide} proof steps.
+using \texttt{lake build +RequestProject.Main}. Axiom audits of both
+final declarations and the operator and spectral identification
+theorems report only \texttt{propext}, \texttt{Classical.choice}, and
+\texttt{Quot.sound}, the standard principles of Lean's classical
+mathematics~\cite{LeanAxioms}. They do not depend on \texttt{sorryAx}
+or additional axioms; the source contains no \texttt{sorry},
+\texttt{admit}, or \texttt{native\_decide} proof steps.
+
+The original variational development was produced with the assistance
+of Aristotle; the operator and spectral identification was developed
+with the assistance of Codex. The source, pinned dependencies,
+verification commands, build record, and source checksum are provided
+in the accompanying GitHub repository.\footnote{\url{https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization}.
+The repository is currently private; access must be granted by its owner.}
 
 \begin{thebibliography}{99}
 
