@@ -50,13 +50,13 @@ theorem about the full operator `spectrum` set.
 | File | Purpose |
 | --- | --- |
 | `RequestProject/Main.lean` | Single proof source; final theorems `main` and `main_counting` |
-| `lean-toolchain` | Pins Lean to `leanprover/lean4:v4.28.0` |
+| `lean-toolchain` | Pins Lean to `leanprover/lean4:v4.35.0-rc2` |
 | `lakefile.toml` | Lean project and mathlib dependency configuration |
 | `lake-manifest.json` | Exact dependency revisions |
 | `paper/D_simply_connected_strict_v7.tex` | Manuscript and formalization section |
 | `paper/D_simply_connected_strict_v7.pdf` | Compiled manuscript PDF |
 | `verification/Audit.lean` | Checks public statements and enforces 16 axiom audits |
-| `verification/local-build.txt` | Successful local Lean 4.28.0 build output |
+| `verification/local-build.txt` | Successful local Lean 4.35.0-rc2 build output |
 | `verification/SHA256SUMS` | SHA-256 checksum of the verified proof source |
 | `.github/workflows/lean.yml` | Rebuilds and audits the pinned proof on GitHub Actions |
 
@@ -74,14 +74,14 @@ Install [Git](https://git-scm.com/) and
 these commands in its root directory:
 
 ```text
-elan toolchain install leanprover/lean4:v4.28.0
+elan toolchain install leanprover/lean4:v4.35.0-rc2
 lake env lean --version
 lake exe cache get
 lake build +RequestProject.Main
 lake env lean verification/Audit.lean
 ```
 
-The version command should report **Lean 4.28.0**. `lean-toolchain` selects this
+The version command should report **Lean 4.35.0-rc2**. `lean-toolchain` selects this
 version for the project. `lake exe cache get` downloads precompiled dependency
 artifacts. The single proof source is large and can take many minutes to check.
 
@@ -117,26 +117,13 @@ has not changed tracked files. The action versions are pinned to commit hashes.
 After changing the proof source, rebuild and audit it before updating
 `verification/SHA256SUMS` and the verified snapshot below.
 
-## Verified snapshot
+## Palomar build snapshot
 
-- Local verification date: **2026-10-03**.
-- Lean: **4.28.0**, compiler commit `7e01a1bf5c70fc6167d49c345d3bf80596e9a79b`.
-- mathlib revision: `8f9d9cff6bd728b17a24e163c9402775d9e6a365`.
-- The merged single source passed `lake build +RequestProject.Main`; see
-  `verification/local-build.txt` for the recorded output.
-- SHA-256 of `RequestProject/Main.lean`:
-
-```text
-c8cda85243508e881a38b7241b422938e7b221b56035285b348a61ba466d4a53
-```
-
-Downloaded dependencies and generated build artifacts are excluded from
-version control. Verification uses the pinned Lean compiler and kernel;
-no independent implementation of Lean's kernel checked this snapshot.
+The Palomar release pin is Lean 4.35.0-rc2 with the matching Mathlib revision recorded in lake-manifest.json. The original 4.28.0 source snapshot was checked before this preparation work; a fresh Palomar-toolchain build and Comparator run are still required after the module split.
 
 ## 中文说明
 
-本项目固定使用 **Lean 4.28.0**。`RequestProject/Main.lean` 是单文件证明。
+本项目固定使用 **Lean 4.35.0-rc2**。`RequestProject/Main.lean` 是单文件证明。
 原变分结论保留为 `strict_polya_variational`；新增的 `main` 证明实际 Dirichlet
 特征值的严格不等式，`main_counting` 证明包含端点、计入重数的谱计数不等式。
 

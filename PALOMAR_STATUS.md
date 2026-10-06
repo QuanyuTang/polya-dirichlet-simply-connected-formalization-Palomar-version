@@ -14,7 +14,7 @@ checked locally and by the original GitHub workflow before this preparation copy
 was made.
 
 This repository is not yet a Palomar submission. The current development uses
-Lean 4.28.0 and a large legacy modular source tree. The Palomar files are
+Lean 4.35.0-rc2 and a large legacy modular source tree. The Palomar files are
 present, but a submission still requires a supported pinned toolchain, a clean
 Comparator run, and an explicit review of the fact that the selected result is
 the variational theorem rather than the stronger operator-spectral `main`.

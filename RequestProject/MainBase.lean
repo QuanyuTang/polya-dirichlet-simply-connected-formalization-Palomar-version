@@ -17,7 +17,7 @@ The original smooth-core variational proof is `strict_polya_variational`.
 The bridge constructs the real and complex H₀¹ domains and their Dirichlet
 operators, proves the min-max identification, and verifies multiplicities.
 The variational development was produced with Aristotle; the spectral bridge
-was developed with Codex. Toolchain: Lean 4.28.0, mathlib v4.28.0.
+was developed with Codex. Toolchain: Palomar toolchain: Lean 4.35.0-rc2, mathlib v4.35.0-rc2.
 -/
 
 noncomputable section
