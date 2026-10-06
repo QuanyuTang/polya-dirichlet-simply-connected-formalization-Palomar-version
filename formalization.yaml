@@ -1,0 +1,81 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Strict Dirichlet Pólya inequality on simply connected planar domains"
+  description: >-
+    A Lean 4 formalization of the strict Dirichlet Pólya inequality for bounded,
+    open, simply connected planar domains, including the indexed eigenvalue and
+    counting formulations.
+  authors:
+    - name: "Quanyu Tang"
+    - name: "Zuoqin Wang"
+  license: "Apache-2.0"
+  responsible_maintainers:
+    - name: "Quanyu Tang"
+    - name: "Zuoqin Wang"
+
+classification:
+  arxiv: ["math.SP", "math.LO"]
+  msc2020: ["35P15", "03B35"]
+
+sources:
+  - title: "Strict Dirichlet Pólya inequality on simply connected planar domains"
+    authors:
+      - "Quanyu Tang"
+      - "Zuoqin Wang"
+    type: "article"
+    id: "https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization/blob/main/paper/D_simply_connected_strict_v7.tex"
+    location: "paper/D_simply_connected_strict_v7.tex in this repository"
+    relationship: "formalizes"
+    note: "The Lean development formalizes the principal strict Dirichlet inequality and its counting formulation."
+
+status:
+  scope: >-
+    The formalized result is the strict Dirichlet Pólya inequality for bounded,
+    open, simply connected planar domains, together with the indexed and
+    counting formulations stated in RequestProject/Main.lean. The repository
+    also records the operator and variational bridges used by the proof.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: ["propext", "Classical.choice", "Quot.sound"]
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["Aristotle", "Codex"]
+      framework: "Lean 4 and Mathlib"
+      tool_setup: "AI-assisted formalization, local Lean compilation, and independent source and axiom audits."
+      cost:
+        wall_time: "not tracked"
+        spend_usd: "subscription-based"
+        hardware: "local development machine"
+      prompting_notes: "Proofs were developed from a self-contained mathematical statement and checked in Lean."
+  spend_usd: "subscription-based"
+  notes: "Human authors reviewed the statement, proof scope, dependencies, and final axiom report."
+
+fidelity:
+  divergences: "The correspondence is recorded in the paper and verification audit; no known weakening of the headline theorem is intended."
+
+review:
+  status: "self-assessed"
+  reviewers:
+    - "Quanyu Tang"
+    - "Zuoqin Wang"
+  notes: "The final theorem and its axiom dependencies were audited locally and by the original GitHub workflow. Palomar Challenge/Solution/Comparator review remains to be completed."
+
+alignment:
+  namespace: "RequestProject"
+  statements:
+    - source: "Main theorem of the paper"
+      lean: "main"
+      module: "RequestProject/Main.lean"
+      status: "proved"
+      note: "The declaration gives the strict indexed Dirichlet inequality under the hypotheses documented in the module."
+    - source: "Counting formulation"
+      lean: "main_counting"
+      module: "RequestProject/Main.lean"
+      status: "proved"
+      note: "The declaration gives the corresponding strict counting inequality."
+
+acknowledgements: "Lean 4, Mathlib, Aristotle, Codex, and the authors' human review."

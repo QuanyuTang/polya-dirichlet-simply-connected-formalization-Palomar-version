@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this formalization, please cite it and the accompanying paper."
+title: "Strict Dirichlet Polya inequality on simply connected planar domains"
+type: software
+authors:
+  - family-names: Tang
+    given-names: Quanyu
+  - family-names: Wang
+    given-names: Zuoqin
+repository-code: "https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization-Palomar-version"
+license: Apache-2.0
+version: "0.1.0-pre"
+date-released: 2026-10-06
+abstract: >-
+  Lean 4 formalization of the strict Dirichlet Polya inequality for bounded,
+  open, simply connected planar domains.

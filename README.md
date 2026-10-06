@@ -145,3 +145,16 @@ no independent implementation of Lean's kernel checked this snapshot.
 执行上面的构建及审计命令即可复核。审计文件包含 16 项断言，成功时不会
 逐项打印公理列表；出现意外依赖会直接报错。GitHub Actions 自动执行源码
 校验、固定版本构建及上述审计，结果可从仓库的 Actions 页面查看。
+
+## Palomar preparation
+
+This repository is a private preparation snapshot for a future Palomar Registry
+submission. The authors and responsible maintainers are Quanyu Tang and Zuoqin
+Wang. `formalization.yaml`, `CITATION.cff`, `LICENSE`, and `PALOMAR_STATUS.md`
+record the intended provenance and submission status.
+
+The exact source snapshot still needs a Palomar-compatible statement/proof split
+(`Challenge.lean`, `Solution.lean`, and `comparator.json`) and a supported pinned
+Lean toolchain before it can be submitted. Palomar submissions must use a public
+GitHub commit, so this preparation repository remains private until the authors
+choose the release snapshot.
