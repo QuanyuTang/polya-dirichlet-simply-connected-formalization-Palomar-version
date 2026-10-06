@@ -8,12 +8,12 @@ project:
     open, simply connected planar domains, including the indexed eigenvalue and
     counting formulations.
   authors:
-    - name: "Quanyu Tang"
-    - name: "Zuoqin Wang"
+    - "Quanyu Tang"
+    - "Zuoqin Wang"
   license: "Apache-2.0"
   responsible_maintainers:
-    - name: "Quanyu Tang"
-    - name: "Zuoqin Wang"
+    - "Quanyu Tang"
+    - "Zuoqin Wang"
 
 classification:
   arxiv: ["math.SP", "math.LO"]
@@ -79,3 +79,4 @@ alignment:
       note: "The declaration gives the corresponding strict counting inequality."
 
 acknowledgements: "Lean 4, Mathlib, Aristotle, Codex, and the authors' human review."
+
