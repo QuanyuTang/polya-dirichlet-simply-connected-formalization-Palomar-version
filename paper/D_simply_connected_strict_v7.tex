@@ -1047,13 +1047,13 @@ The source tree is pinned to
 \texttt{leanprover/lean4:v4.35.0-rc2} and the matching \texttt{mathlib}
 revision recorded in the repository's \texttt{lake-manifest.json}.
 The Palomar preparation uses this pinned toolchain; the repository records
-the exact build and audit commands.
-using \texttt{lake build +RequestProject.Main}. Axiom audits of both
+the exact build and audit commands. The recorded verification uses
+\texttt{lake build +RequestProject.Main}. Axiom audits of both
 final declarations and the operator and spectral identification
 theorems report only \texttt{propext}, \texttt{Classical.choice}, and
 \texttt{Quot.sound}, the standard principles of Lean's classical
 mathematics~\cite{LeanAxioms}. They do not depend on \texttt{sorryAx}
-or additional axioms; the source contains no \texttt{sorry},
+or additional axioms; the proof source under \texttt{RequestProject/} contains no \texttt{sorry},
 \texttt{admit}, or \texttt{native\_decide} proof steps.
 
 The original variational development was produced with the assistance
