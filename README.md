@@ -153,8 +153,14 @@ submission. The authors and responsible maintainers are Quanyu Tang and Zuoqin
 Wang. `formalization.yaml`, `CITATION.cff`, `LICENSE`, and `PALOMAR_STATUS.md`
 record the intended provenance and submission status.
 
-The exact source snapshot still needs a Palomar-compatible statement/proof split
-(`Challenge.lean`, `Solution.lean`, and `comparator.json`) and a supported pinned
-Lean toolchain before it can be submitted. Palomar submissions must use a public
-GitHub commit, so this preparation repository remains private until the authors
-choose the release snapshot.
+The Palomar-compatible statement/proof split is now present in
+`Challenge.lean`, `Solution.lean`, and `comparator.json`. The selected
+Comparator declaration is `PalomarDirichlet.main_result`, which states the
+strict variational inequality proved by `strict_polya_variational`. The stronger
+operator-spectral declarations `main` and `main_counting` remain in the source
+development but are deliberately not advertised by this configuration, because
+their statement-side spectral operator definitions are substantially larger than
+Palomar's small Challenge surface. The project still needs a Palomar-supported
+Lean toolchain and a successful clean Comparator run before submission. Palomar
+submissions must use a public GitHub commit, so this preparation repository
+remains private until the authors choose the release snapshot.
