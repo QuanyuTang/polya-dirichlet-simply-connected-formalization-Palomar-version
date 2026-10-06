@@ -59,15 +59,29 @@ lemma norm_sq_eq_tsum (x : L2N) : ‖x‖ ^ (2 : ℝ) = ∑' n, ‖x n‖ ^ (2 :
 def shiftLM : L2N →ₗ[ℂ] L2N where
   toFun x := ⟨shiftFun x, memℓp_shiftFun x.2⟩
   map_add' x y := by
-    ext n; cases n <;> simp [shiftFun]
+    ext n
+    change shiftFun (↑(x + y)) n = (shiftFun (↑x) + shiftFun (↑y)) n
+    rw [lp.coeFn_add]
+    cases n <;> simp [shiftFun]
   map_smul' c x := by
-    ext n; cases n <;> simp [shiftFun]
+    ext n
+    change shiftFun (↑(c • x)) n = (c • shiftFun (↑x)) n
+    rw [lp.coeFn_smul]
+    cases n <;> simp [shiftFun]
 
 /-- The backward shift as a linear map. -/
 def shiftAdjLM : L2N →ₗ[ℂ] L2N where
   toFun x := ⟨shiftAdjFun x, memℓp_shiftAdjFun x.2⟩
-  map_add' x y := by ext n; simp [shiftAdjFun]
-  map_smul' c x := by ext n; simp [shiftAdjFun]
+  map_add' x y := by
+    ext n
+    change shiftAdjFun (↑(x + y)) n = (shiftAdjFun (↑x) + shiftAdjFun (↑y)) n
+    rw [lp.coeFn_add]
+    simp [shiftAdjFun]
+  map_smul' c x := by
+    ext n
+    change shiftAdjFun (↑(c • x)) n = (c • shiftAdjFun (↑x)) n
+    rw [lp.coeFn_smul]
+    simp [shiftAdjFun]
 
 lemma norm_shiftLM (x : L2N) : ‖shiftLM x‖ = ‖x‖ := by
   have h1 := norm_sq_eq_tsum (shiftLM x)
