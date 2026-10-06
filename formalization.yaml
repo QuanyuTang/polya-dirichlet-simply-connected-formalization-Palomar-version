@@ -56,7 +56,11 @@ automation:
   notes: "Human authors reviewed the statement, proof scope, dependencies, and final axiom report."
 
 fidelity:
-  divergences: "The correspondence is recorded in the paper and verification audit; no known weakening of the headline theorem is intended."
+  divergences: >-
+    The Palomar Comparator advertises the variational strict inequality. The
+    source also proves the stronger operator-spectral declarations `main` and
+    `main_counting`, which remain available through the aggregate source entry
+    point but are not selected by the small Challenge surface.
 
 review:
   status: "self-assessed"
