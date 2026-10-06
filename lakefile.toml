@@ -4,7 +4,7 @@ defaultTargets = ["RequestProject", "Challenge", "Solution"]
 [[require]]
 name = "mathlib"
 git = "https://github.com/leanprover-community/mathlib4.git"
-rev = "v4.28.0"
+rev = "v4.35.0-rc2"
 
 [[lean_lib]]
 name = "RequestProject"
@@ -17,3 +17,4 @@ roots = ["Challenge"]
 [[lean_lib]]
 name = "Solution"
 roots = ["Solution"]
+
