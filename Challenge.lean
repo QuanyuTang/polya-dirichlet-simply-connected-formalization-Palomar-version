@@ -4,6 +4,8 @@ public import Mathlib
 
 @[expose] public section
 
+noncomputable section
+
 open MeasureTheory
 
 /-- Smooth, compactly supported real functions whose closed support lies in Ω. -/
