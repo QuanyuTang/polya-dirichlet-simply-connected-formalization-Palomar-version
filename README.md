@@ -1,13 +1,14 @@
 # Strict Dirichlet Pólya inequality: Lean formalization
 
-This repository contains a single-file Lean proof of the strict Dirichlet
-Pólya inequality for bounded, nonempty, simply connected planar domains,
+This repository contains a modular Lean proof of the strict Dirichlet
+Pólya inequality for bounded, nonempty, simply connected planar domains.
+`RequestProject/Main.lean` is the aggregate entry point for the three proof modules,
 together with the accompanying manuscript.
 
 [Lean source](RequestProject/Main.lean) ·
 [Paper PDF](paper/D_simply_connected_strict_v7.pdf) ·
 [Paper source](paper/D_simply_connected_strict_v7.tex) ·
-[Automatic verification](https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization/actions/workflows/lean.yml)
+[Automatic verification](https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization-Palomar-version/actions/workflows/lean.yml)
 
 ## Mathematical statement and scope
 
@@ -49,7 +50,10 @@ theorem about the full operator `spectrum` set.
 
 | File | Purpose |
 | --- | --- |
-| `RequestProject/Main.lean` | Single proof source; final theorems `main` and `main_counting` |
+| `RequestProject/Main.lean` | Aggregate entry point; final theorems `main` and `main_counting` |
+| `RequestProject/MainBase.lean` | First proof module (under 10,000 lines) |
+| `RequestProject/MainMiddle.lean` | Second proof module (under 10,000 lines) |
+| `RequestProject/MainSpectral.lean` | Spectral bridge and final theorems (under 10,000 lines) |
 | `lean-toolchain` | Pins Lean to `leanprover/lean4:v4.35.0-rc2` |
 | `lakefile.toml` | Lean project and mathlib dependency configuration |
 | `lake-manifest.json` | Exact dependency revisions |
@@ -123,7 +127,7 @@ The Palomar release pin is Lean 4.35.0-rc2 with the matching Mathlib revision re
 
 ## 中文说明
 
-本项目固定使用 **Lean 4.35.0-rc2**。`RequestProject/Main.lean` 是单文件证明。
+本项目固定使用 **Lean 4.35.0-rc2**。`RequestProject/Main.lean` 是聚合入口，实际证明分为 `MainBase.lean`、`MainMiddle.lean` 和 `MainSpectral.lean` 三个模块。
 原变分结论保留为 `strict_polya_variational`；新增的 `main` 证明实际 Dirichlet
 特征值的严格不等式，`main_counting` 证明包含端点、计入重数的谱计数不等式。
 
