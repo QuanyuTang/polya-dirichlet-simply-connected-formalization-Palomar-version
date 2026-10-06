@@ -1,3 +1,7 @@
+# Historical pre-Palomar verification record
+
+This file records the former Lean 4.28.0 build of the pre-Palomar source. It is retained for provenance and is not a verification record for the current Lean 4.35.0-rc2 snapshot.
+
 Lean (version 4.28.0, x86_64-w64-windows-gnu, commit 7e01a1bf5c70fc6167d49c345d3bf80596e9a79b, Release)
 Started: 2026-10-03T16:03:41.758896-03:00
 Command: lake build +RequestProject.Main

@@ -1020,7 +1020,10 @@ in terms of the index alone is asserted here.
 \section{Lean formalization}\label{sec:lean-formalization}
 
 Both assertions of Theorem~\ref{thm:main} have been formalized in Lean
-in the single source file \texttt{Main.lean}. The declarations
+in the modular source tree rooted at \texttt{RequestProject/Main.lean}.
+The aggregate file imports the three checked modules
+\texttt{MainBase.lean}, \texttt{MainMiddle.lean}, and
+\texttt{MainSpectral.lean}. The declarations
 \texttt{main} and \texttt{main\_counting} prove
 \eqref{eq:strict-eigenvalues} and \eqref{eq:polya}, respectively, for
 every bounded nonempty simply connected planar domain, without a
@@ -1040,11 +1043,11 @@ Thus the formalized counting function is precisely
 $N_\Omega(E)=\#\{j\ge1:\lambda_j(\Omega)\le E\}$, with the endpoint
 included and eigenvalues repeated according to multiplicity.
 
-The source was successfully checked with
-\texttt{leanprover/lean4:v4.28.0} and \texttt{mathlib} revision
-\begin{verbatim}
-8f9d9cff6bd728b17a24e163c9402775d9e6a365
-\end{verbatim}
+The source tree is pinned to
+\texttt{leanprover/lean4:v4.35.0-rc2} and the matching \texttt{mathlib}
+revision recorded in the repository's \texttt{lake-manifest.json}.
+The Palomar preparation uses this pinned toolchain; the repository records
+the exact build and audit commands.
 using \texttt{lake build +RequestProject.Main}. Axiom audits of both
 final declarations and the operator and spectral identification
 theorems report only \texttt{propext}, \texttt{Classical.choice}, and
@@ -1057,7 +1060,7 @@ The original variational development was produced with the assistance
 of Aristotle; the operator and spectral identification was developed
 with the assistance of Codex. The source, pinned dependencies,
 verification commands, build record, and source checksum are provided
-in the accompanying GitHub repository.\footnote{\url{https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization}.
+in the accompanying GitHub repository.\footnote{\url{https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization-Palomar-version}.
 The repository is currently private; access must be granted by its owner.}
 
 \begin{thebibliography}{99}

@@ -60,7 +60,7 @@ theorem about the full operator `spectrum` set.
 | `paper/D_simply_connected_strict_v7.tex` | Manuscript and formalization section |
 | `paper/D_simply_connected_strict_v7.pdf` | Compiled manuscript PDF |
 | `verification/Audit.lean` | Checks public statements and enforces 16 axiom audits |
-| `verification/local-build.txt` | Successful local Lean 4.35.0-rc2 build output |
+| `verification/local-build.txt` | Historical pre-Palomar Lean 4.28.0 build record; rerun for the current rc2 snapshot |
 | `verification/SHA256SUMS` | SHA-256 checksum of the verified proof source |
 | `.github/workflows/lean.yml` | Rebuilds and audits the pinned proof on GitHub Actions |
 
@@ -123,7 +123,7 @@ After changing the proof source, rebuild and audit it before updating
 
 ## Palomar build snapshot
 
-The Palomar release pin is Lean 4.35.0-rc2 with the matching Mathlib revision recorded in lake-manifest.json. The original 4.28.0 source snapshot was checked before this preparation work; a fresh Palomar-toolchain build and Comparator run are still required after the module split.
+The Palomar release pin is Lean 4.35.0-rc2 with the matching Mathlib revision recorded in lake-manifest.json. The original 4.28.0 source snapshot was checked before this preparation work. A fresh Palomar-toolchain build and Comparator run are required for this release snapshot.
 
 ## 中文说明
 
