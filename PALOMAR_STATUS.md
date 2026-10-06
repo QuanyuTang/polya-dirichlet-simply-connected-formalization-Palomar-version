@@ -9,7 +9,7 @@ Authors and responsible maintainers: **Quanyu Tang** and **Zuoqin Wang**.
 The source was copied from the final Dirichlet repository commit `0c42251e2b602c9b49db6f2c37a9d27c858d1475`. The mathematical source is the paper in `paper/`. The Palomar statement/proof pair advertises
 `PalomarDirichlet.main_result`, the variational theorem corresponding to
 `strict_polya_variational`; the stronger operator-spectral theorem is the
-`main` declaration in `RequestProject/Main.lean`. The source formalization was
+`main` declaration in `RequestProject/MainSpectral.lean` (re-exported by `RequestProject/Main.lean`). The source formalization was
 checked locally and by the original GitHub workflow before this preparation copy
 was made.
 

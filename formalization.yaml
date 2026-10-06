@@ -35,7 +35,7 @@ status:
     The repository contains both the variational and operator-spectral Dirichlet
     Pólya developments. The Palomar Challenge/Solution pair advertises the
     variational strict inequality `PalomarDirichlet.main_result`; the operator
-    spectral theorems `main` and `main_counting` remain in RequestProject/Main.lean
+    spectral theorems `main` and `main_counting` remain in RequestProject/MainSpectral.lean and are re-exported by RequestProject/Main.lean
     and are not selected by this Comparator configuration.
   sorry_count: 0
   sorry_in_definitions: 0
@@ -72,15 +72,15 @@ alignment:
       lean: "PalomarDirichlet.main_result"
       module: "Challenge.lean and Solution.lean"
       status: "proved"
-      note: "The Comparator declaration has exactly the statement of `strict_polya_variational` in RequestProject/Main.lean."
+      note: "The Comparator declaration has exactly the statement of `strict_polya_variational` in RequestProject/MainSpectral.lean."
     - source: "Operator-spectral indexed theorem (retained source result)"
       lean: "main"
-      module: "RequestProject/Main.lean"
+      module: "RequestProject/MainSpectral.lean"
       status: "proved"
       note: "This stronger operator-spectral theorem is present in the substantive source but is not selected by the current Palomar Comparator configuration."
     - source: "Operator-spectral counting theorem (retained source result)"
       lean: "main_counting"
-      module: "RequestProject/Main.lean"
+      module: "RequestProject/MainSpectral.lean"
       status: "proved"
       note: "This counting theorem is present in the substantive source but is not selected by the current Palomar Comparator configuration."
 
