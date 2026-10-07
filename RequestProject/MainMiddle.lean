@@ -6,6 +6,18 @@ public import RequestProject.MainBase
 
 noncomputable section
 
+/-! The rc2 API no longer supplies the real scalar star module and continuity
+instances for operator spaces automatically.  These are the canonical
+instances induced by the complex operator algebra and its continuous star map. -/
+instance : StarModule ℝ (L2N →L[ℂ] L2N) :=
+  ⟨fun a T => by
+    change star ((a : ℂ) • T) = (a : ℂ) • star T
+    rw [star_smul]
+    simp⟩
+
+instance : ContinuousStar (L2N →L[ℂ] L2N) :=
+  ⟨(starL' ℝ (A := L2N →L[ℂ] L2N)).continuous⟩
+
 section
 
 /-! ## Trace of the generator and the area identity -/
@@ -104,7 +116,10 @@ lemma continuousOn_quad (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ} (hr :
   have h0 : ContinuousOn (fun θ => holW G k r θ x) (Icc 0 (2 * π)) :=
     (continuousOn_holW k hG hr).clm_apply continuousOn_const
   have := (coordCLM 0).continuous.comp_continuousOn h0
-  simpa [Function.comp_def] using (this.norm).pow 2
+  have hp := (this.norm).pow 2
+  refine hp.congr ?_
+  intro θ hθ
+  simpa only [Function.comp_apply, coordCLM_apply, Pi.pow_apply]
 
 /-- Bessel's inequality for the vectors `W_r(θ)^* e₀`. -/
 lemma sum_norm_holW_apply_zero_le (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ}
@@ -150,12 +165,15 @@ theorem posTrace_holA (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ}
   · refine iSup_le fun n => iSup_le fun v => iSup_le fun hv => ?_
     rw [diagSum_holA k hG hr]
     refine ENNReal.ofReal_le_ofReal (intervalIntegral.integral_mono_on h2π ?_ hJint fun θ hθ => ?_)
-    · exact ((continuous_jac hG hr).continuousOn.mul (continuousOn_finset_sum _
-        fun i _ => by
-          have h0 : ContinuousOn (fun θ => holW G k r θ (v i)) (Icc 0 (2 * π)) :=
-            (continuousOn_holW k hG hr).clm_apply continuousOn_const
-          have := (coordCLM 0).continuous.comp_continuousOn h0
-          simpa [Function.comp_def] using (this.norm).pow 2)).intervalIntegrable_of_Icc h2π
+    · have hsum : ContinuousOn (fun θ => ∑ i, ‖holW G k r θ (v i) 0‖ ^ 2)
+          (Icc 0 (2 * π)) := by
+        refine continuousOn_finset_sum _ fun i _ => ?_
+        have h0 : ContinuousOn (fun θ => holW G k r θ (v i)) (Icc 0 (2 * π)) :=
+          (continuousOn_holW k hG hr).clm_apply continuousOn_const
+        have hc := (coordCLM 0).continuous.comp_continuousOn h0
+        have hp := (hc.norm).pow 2
+        exact hp.congr fun θ hθ => by simp [Function.comp_def, coordCLM_apply]
+      exact ((continuous_jac hG hr).continuousOn.mul hsum).intervalIntegrable_of_Icc h2π
     · calc jac G r θ * ∑ i, ‖holW G k r θ (v i) 0‖ ^ 2 ≤ jac G r θ * 1 :=
             mul_le_mul_of_nonneg_left (sum_norm_holW_apply_zero_le k hG hr hθ hv)
               (jac_nonneg hr.1 θ)
@@ -171,12 +189,16 @@ theorem posTrace_holA (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ}
       refine intervalIntegral.tendsto_integral_filter_of_dominated_convergence (jac G r) ?_ ?_
         hJint ?_
       · refine Eventually.of_forall fun n => ?_
-        have hc : ContinuousOn (F n) (Icc 0 (2 * π)) :=
-          (continuous_jac hG hr).continuousOn.mul (continuousOn_finset_sum _ fun i _ => by
-            have h0 : ContinuousOn (fun θ => holW G k r θ (u n i)) (Icc 0 (2 * π)) :=
-              (continuousOn_holW k hG hr).clm_apply continuousOn_const
-            have := (coordCLM 0).continuous.comp_continuousOn h0
-            simpa [Function.comp_def] using (this.norm).pow 2)
+        have hsum : ContinuousOn (fun θ => ∑ i, ‖holW G k r θ (u n i) 0‖ ^ 2)
+            (Icc 0 (2 * π)) := by
+          refine continuousOn_finset_sum _ fun i _ => ?_
+          have h0 : ContinuousOn (fun θ => holW G k r θ (u n i)) (Icc 0 (2 * π)) :=
+            (continuousOn_holW k hG hr).clm_apply continuousOn_const
+          have hc := (coordCLM 0).continuous.comp_continuousOn h0
+          have hp := (hc.norm).pow 2
+          exact hp.congr fun θ hθ => by simp [Function.comp_def, coordCLM_apply]
+        have hc : ContinuousOn (F n) (Icc 0 (2 * π)) := by
+          convert (continuous_jac hG hr).continuousOn.mul hsum using 1 <;> rfl
         rw [uIoc_of_le h2π]
         exact (hc.mono Ioc_subset_Icc_self).aestronglyMeasurable measurableSet_Ioc
       · refine Eventually.of_forall fun n => Eventually.of_forall fun θ hθ => ?_
@@ -273,9 +295,11 @@ theorem hasDerivAt_angular {F : ℂ → ℂ} {r θ : ℝ}
     have h2 : HasDerivAt (fun t : ℝ => (t : ℂ) * I) I θ := by
       simpa using (Complex.ofRealCLM.hasDerivAt (x := θ)).mul_const I
     exact (h2.cexp).const_mul (r : ℂ)
-  have := hF.hasDerivAt.comp θ h1
-  convert this using 1
-  ring
+  have hcomp := hF.hasDerivAt.comp θ h1
+  convert hcomp using 1
+  · funext t
+    simp only [Function.comp_apply]
+  · ring
 
 /-- The oriented real Jacobian of `(r, θ) ↦ F(r e^{iθ})` equals `r |F'(r e^{iθ})|²`:
 with `∂_r γ = e^{iθ} F'` and `∂_θ γ = i r e^{iθ} F'`,
@@ -328,7 +352,8 @@ def dMix (G : ℂ → ℂ) (r θ : ℝ) : ℂ :=
 lemma coefAng_eq (G : ℂ → ℂ) (r θ : ℝ) : coefAng G k r θ = coefOf k (dAng G r θ) := rfl
 
 lemma coefOf_sub (d e : ℂ) : coefOf k d - coefOf k e = coefOf k (d - e) := by
-  simp only [coefOf, sub_re, sub_im, ofReal_sub, sub_smul]; abel
+  simp only [coefOf, sub_re, sub_im, ofReal_sub]
+  module
 
 lemma coefOf_smul (a : ℝ) (d : ℂ) : coefOf k ((a : ℂ) * d) = (a : ℂ) • coefOf k d := by
   simp only [coefOf, re_ofReal_mul, im_ofReal_mul, ofReal_mul, smul_add, mul_smul]
@@ -360,8 +385,10 @@ lemma hasDerivAt_dAng (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ} (hr : r
   have := h3.mul h2
   unfold dAng dMix
   convert this using 1
-  simp only [Function.comp_apply]
-  ring
+  · funext s
+    rfl
+  · simp only [Function.comp_apply]
+    ring
 
 lemma hasDerivAt_dRad (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ} (hr : r ∈ Ico (0 : ℝ) 1)
     (θ : ℝ) : HasDerivAt (fun t => dRad G r t) (dMix G r θ) θ := by
@@ -378,17 +405,19 @@ lemma hasDerivAt_dRad (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ} (hr : r
   have := he.mul h2
   unfold dRad dMix
   convert this using 1
-  simp only [Function.comp_apply]
-  ring
+  · funext s
+    rfl
+  · simp only [Function.comp_apply]
+    ring
 
 lemma hasDerivAt_coefOf {f : ℝ → ℂ} {f' : ℂ} {x : ℝ} (hf : HasDerivAt f f' x) :
     HasDerivAt (fun y => coefOf k (f y)) (coefOf k f') x := by
   have hre : HasDerivAt (fun y => ((f y).re : ℂ)) (f'.re : ℂ) x := by
     have := (Complex.ofRealCLM.comp Complex.reCLM).hasFDerivAt.comp_hasDerivAt x hf
-    simpa using this
+    convert! this using 1
   have him : HasDerivAt (fun y => ((f y).im : ℂ)) (f'.im : ℂ) x := by
     have := (Complex.ofRealCLM.comp Complex.imCLM).hasFDerivAt.comp_hasDerivAt x hf
-    simpa using this
+    convert! this using 1
   exact (hre.smul_const (opX k)).add (him.smul_const (opY k))
 
 lemma continuous_coefOf : Continuous (coefOf k) := by
@@ -412,13 +441,15 @@ lemma commutator_coefAng_coefRad (G : ℂ → ℂ) (r θ : ℝ) :
       ((-jac G r θ : ℝ) : ℂ) • ((I * k ^ 2 / 2) • projE0) := by
   have h := commutator_linear_combination (opX k) (opY k) (dAng G r θ).re (dAng G r θ).im
     (dRad G r θ).re (dRad G r θ).im
-  simp only [← Complex.coe_smul] at h
   have hs : (dAng G r θ).re * (dRad G r θ).im - (dAng G r θ).im * (dRad G r θ).re =
       -jac G r θ := by
     have hj := polar_jacobian r θ (deriv G (r * exp (θ * I)))
     simp only [dAng, dRad, jac]
     linarith
-  rw [coefAng_eq, coefOf, coefOf, h, commutator_opX_opY, hs]
+  rw [coefAng_eq, coefOf, coefOf]
+  have hh := h.trans (by rw [commutator_opX_opY, hs])
+  rw [RCLike.real_smul_eq_coe_smul (K := ℂ)] at hh
+  exact hh
 
 lemma continuousOn_dMix_uncurry (hG : DifferentiableOn ℂ G (ball 0 1)) {b : ℝ} (hb : b < 1) :
     ContinuousOn (Function.uncurry (dMix G)) (Icc 0 b ×ˢ univ) := by
@@ -491,9 +522,17 @@ lemma holW_sub_holW (hG : DifferentiableOn ℂ G (ball 0 1)) {r s : ℝ} (hr : r
   have hgd : ∀ t ∈ Icc 0 (2 * π), HasDerivWithinAt g (g' t) (Icc 0 (2 * π)) t := by
     intro t ht
     have hd := ((hrd t ht).star).mul (hsd t ht)
-    convert hd using 1
+    convert! hd using 1
     rw [star_mul, star_coefAng]
-    simp only [hg', mul_sub, sub_mul, mul_neg, neg_mul, mul_assoc]
+    simp only [hg', mul_sub, sub_mul, mul_neg, neg_mul, mul_assoc,
+      neg_one_smul, neg_smul, smul_mul_assoc, mul_smul_comm, smul_eq_mul]
+    have hnegmul :
+        -(star (holW G k r t) * (coefAng G k r t * holW G k s t)) =
+        star (holW G k r t) * (-coefAng G k r t * holW G k s t) := by
+      apply ContinuousLinearMap.ext
+      intro x
+      simp [mul_apply_eq_comp]
+    rw [sub_eq_add_neg, hnegmul]
     abel
   have hsub : Icc 0 θ ⊆ Icc 0 (2 * π) := Icc_subset_Icc_right hθ.2
   have hg'c : ContinuousOn g' (Icc 0 (2 * π)) := by
@@ -630,9 +669,9 @@ lemma hasDerivWithinAt_holV (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ}
         coefOf k (dMix G r t) * holW G k r t)) volume 0 (2 * π) :=
       (hc2.const_smul ((s : ℂ) - r)).intervalIntegrable_of_Icc two_pi_pos.le
     rw [intervalIntegral.integral_sub hint1 hint3, intervalIntegral.integral_smul,
-      mul_sub, holV, holV, hD, mul_smul_comm, ← Complex.coe_smul]
-    push_cast
-    rfl
+      mul_sub, holV, holV, hD, mul_smul_comm]
+    simp only [← Complex.ofReal_sub, Complex.real_smul]
+    congr 2
   rw [hexpr, CStarRing.norm_mem_unitary_mul _ hVu, Real.norm_eq_abs]
   refine (intervalIntegral.norm_integral_le_of_norm_le_const (C :=
     (2 * |k| * ε₁ + L ^ 2 * (2 * π) * |s - r|) * |s - r|) fun t ht => hpt t ?_).trans ?_
@@ -668,7 +707,7 @@ lemma hasDerivWithinAt_curv (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ}
   have hKd : HasDerivAt (fun t => coefOf k (dRad G r t)) (coefOf k (dMix G r t)) t :=
     hasDerivAt_coefOf k (hasDerivAt_dRad hG hr t)
   have hd := (((hWd t ht).star).mul hKd.hasDerivWithinAt).mul (hWd t ht)
-  convert hd using 1
+  convert! hd using 1
   have hcomm := commutator_coefAng_coefRad k G r t
   set W := holW G k r t
   set K := coefOf k (dRad G r t)
@@ -676,10 +715,31 @@ lemma hasDerivWithinAt_curv (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ}
   have hQ' : (I * k ^ 2 / 2) • (((jac G r t : ℝ) : ℂ) • (star W * projE0 * W)) =
       star W * (K * C - C * K) * W := by
     rw [show K * C - C * K = -(C * K - K * C) by abel, hcomm]
-    simp only [ofReal_neg, neg_smul, neg_neg, mul_smul_comm, smul_mul_assoc, mul_assoc]
-    rw [smul_comm]
+    have hneg (X : L2N →L[ℂ] L2N) : -X = (-1 : ℂ) • X := by
+      exact (neg_one_smul ℂ X).symm
+    rw [hneg]
+    have hscalar (a j : ℂ) (S P W : L2N →L[ℂ] L2N) :
+        a • j • (S * P * W) =
+          S * ((-1 : ℂ) • ((-1 : ℂ) • (j * a) • P)) * W := by
+      simp only [smul_smul, smul_mul_assoc, mul_smul_comm]
+      module
+    convert hscalar (I * k ^ 2 / 2) (jac G r t : ℂ) (star W) projE0 W using 1 <;>
+      simp only [RCLike.real_smul_eq_coe_smul (K := ℂ), ofReal_neg, neg_smul,
+        neg_neg, smul_smul, mul_smul_comm, smul_mul_assoc, mul_assoc,
+        neg_one_smul, one_mul, mul_one] <;>
+      ring
   rw [hQ', star_mul, star_coefAng]
-  simp only [Pi.mul_apply, mul_sub, sub_mul, mul_neg, neg_mul, mul_assoc, add_mul]
+  simp only [Pi.mul_apply, mul_sub, sub_mul, mul_neg, neg_mul, mul_assoc, add_mul,
+    RCLike.real_smul_eq_coe_smul (K := ℂ), neg_one_smul, neg_smul,
+    smul_mul_assoc, mul_smul_comm]
+  simp only [sub_eq_add_neg, C, mul_assoc, neg_mul, mul_neg]
+  have hnegmul :
+      -(star W * (coefAng G k r t * (K * W))) =
+      star W * (-coefAng G k r t * (K * W)) := by
+    apply ContinuousLinearMap.ext
+    intro x
+    simp [mul_apply_eq_comp]
+  rw [hnegmul]
   abel
 
 /-- `∫₀^{2π} W_r^* (∂_r C_θ) W_r dθ = V_r^* B_r V_r - B_r - (ik²/2) A_r`. -/
@@ -695,8 +755,9 @@ theorem integral_curvature (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ}
     ((continuous_star.comp_continuousOn hWc).mul
       ((continuous_coefOf k).comp (continuous_dMix hG hr)).continuousOn).mul hWc
   have hQc : ContinuousOn (fun t => (I * k ^ 2 / 2) •
-      (((jac G r t : ℝ) : ℂ) • (star (holW G k r t) * projE0 * holW G k r t))) (Icc 0 (2 * π)) :=
-    (continuousOn_holA_integrand k hG hr).const_smul _
+      (((jac G r t : ℝ) : ℂ) • (star (holW G k r t) * projE0 * holW G k r t))) (Icc 0 (2 * π)) := by
+    have hh := (continuousOn_holA_integrand k hG hr).const_smul (I * k ^ 2 / 2)
+    convert hh using 1 <;> ext t <;> simp
   have hint := intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le two_pi_pos.le
       (fun t ht => (hasDerivWithinAt_curv k hG hr ht).continuousWithinAt) (fun t ht =>
         ((hasDerivWithinAt_curv k hG hr (Ioo_subset_Icc_self ht)).hasDerivAt
@@ -724,11 +785,28 @@ theorem hasDerivWithinAt_holH (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ}
   have hVV : ∀ X : L2N →L[ℂ] L2N, holV G k r * (star (holV G k r) * X) = X := fun X => by
     rw [← mul_assoc, Unitary.mul_star_self_of_mem hVu, one_mul]
   have hd := ((hR.star).mul hV).mul hR
-  convert hd using 1
+  convert! hd using 1
   rw [star_mul, star_coefRad]
-  simp only [Pi.mul_apply, add_mul, sub_mul, mul_sub, mul_assoc, neg_mul, mul_neg, hVV, mul_smul_comm,
-    smul_mul_assoc,
-    neg_smul]
+  simp only [Pi.mul_apply, add_mul, sub_mul, mul_sub, mul_assoc, neg_mul, mul_neg, hVV,
+    RCLike.real_smul_eq_coe_smul (K := ℂ), mul_smul_comm, smul_mul_assoc,
+    neg_smul, neg_one_smul, neg_one_zsmul]
+  have hnegmul :
+      star (holR G k r) * (-coefRad G k r *
+        (holV G k r * holR G k r)) =
+      -(star (holR G k r) *
+        (coefRad G k r * (holV G k r * holR G k r))) := by
+    apply ContinuousLinearMap.ext
+    intro x
+    simp [mul_apply_eq_comp]
+  rw [hnegmul]
+  simp only [sub_eq_add_neg, mul_assoc]
+  have hqneg : (-(I * k ^ 2 / 2) : ℂ) •
+      (star (holR G k r) * (holV G k r * (holA G k r * holR G k r))) =
+      -((I * k ^ 2 / 2) •
+        (star (holR G k r) * (holV G k r * (holA G k r * holR G k r)))) := by
+    exact neg_smul (R := ℂ) (I * k ^ 2 / 2)
+      (star (holR G k r) * (holV G k r * (holA G k r * holR G k r)))
+  rw [hqneg]
   abel
 
 /-- `-i U_r^* ∂_r U_r = L_{r,k}` on `[0, b]`, for `0 < b < 1`. -/
@@ -744,12 +822,14 @@ theorem generator_holU (hG : DifferentiableOn ℂ G (ball 0 1)) {b : ℝ} (hb0 :
   have hRR : ∀ X : L2N →L[ℂ] L2N, holR G k r * (star (holR G k r) * X) = X := fun X => by
     rw [← mul_assoc, Unitary.mul_star_self_of_mem hRu, one_mul]
   unfold generator
-  rw [hU.derivWithin (uniqueDiffOn_Icc hb0 r hr), holL_eq, holU, star_star]
+  have hderiv := hU.derivWithin (uniqueDiffOn_Icc hb0 r hr)
+  change -I • (star (holU G k r) * derivWithin (holU G k) (Icc 0 b) r) = holL G k r
+  rw [hderiv, holL_eq, holU, star_star]
   simp only [holH, star_mul, star_star, star_smul, hA.star_eq, mul_smul_comm,
     smul_smul, mul_assoc, hRR]
   congr 1
-  simp only [Complex.star_def, map_neg, map_div₀, map_mul, conj_I, map_pow, conj_ofReal,
-    map_ofNat]
+  simp only [Complex.star_def, map_neg, map_mul, map_div₀, map_pow,
+    Complex.conj_ofReal, Complex.conj_I, map_ofNat]
   push_cast
   ring_nf
   rw [I_sq]
@@ -789,8 +869,10 @@ theorem contDiffOn_holU (hG : DifferentiableOn ℂ G (ball 0 1)) {b : ℝ} (hb0 
   have hAc := continuousOn_holA k hG
   have hcont : ContinuousOn (fun r => star ((-(I * k ^ 2 / 2)) •
       (star (holR G k r) * holV G k r * holA G k r * holR G k r))) (Icc 0 b) := by
-    refine continuous_star.comp_continuousOn (ContinuousOn.const_smul ?_ _)
-    exact ((((continuous_star.comp_continuousOn hRc).mul hVc).mul hAc).mul hRc).mono hsub
+    apply continuous_star.comp_continuousOn
+    have hh := ((((continuous_star.comp_continuousOn hRc).mul hVc).mul hAc).mul hRc).mono hsub
+    have hs := hh.const_smul (-(I * k ^ 2 / 2))
+    convert hs using 1 <;> ext t <;> simp
   rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl,
     contDiffOn_succ_iff_derivWithin (uniqueDiffOn_Icc hb0)]
   refine ⟨fun r hr => (hd r hr).differentiableWithinAt, by simp, ?_⟩
@@ -890,8 +972,8 @@ lemma holL_eq_integral (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ}
       ∫ θ in (0 : ℝ)..(2 * π), ((jac G r θ : ℝ) : ℂ) • rankOne (holVec G k r θ) := by
   set M := holH G k r * star (holR G k r) with hM
   let Φ : (L2N →L[ℂ] L2N) →L[ℝ] (L2N →L[ℂ] L2N) :=
-    ((ContinuousLinearMap.mul ℝ (L2N →L[ℂ] L2N)).flip (star M)).comp
-      (ContinuousLinearMap.mul ℝ (L2N →L[ℂ] L2N) M)
+    ((((ContinuousLinearMap.mul ℂ (L2N →L[ℂ] L2N)).flip (star M)).comp
+      (ContinuousLinearMap.mul ℂ (L2N →L[ℂ] L2N) M))).restrictScalars ℝ
   have hΦ : ∀ X, Φ X = M * X * star M := fun X => rfl
   have hint : IntervalIntegrable (fun θ => ((jac G r θ : ℝ) : ℂ) •
       (star (holW G k r θ) * projE0 * holW G k r θ)) volume 0 (2 * π) :=
@@ -1078,7 +1160,7 @@ lemma holVec_unif (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ} (hr : r ∈
     exact hMs.le
   have e2 : ‖(star (holW G k s θ) - star (holW G k r θ)) e0‖ ≤ ε / 2 := by
     refine (ContinuousLinearMap.le_opNorm _ _).trans ?_
-    rw [norm_e0, mul_one, ← star_sub, norm_star]
+    rw [(star_sub (holW G k s θ) (holW G k r θ)).symm, norm_star, norm_e0, mul_one]
     exact hW
   linarith
 
@@ -1191,7 +1273,7 @@ lemma holL_isPositive {G : ℂ → ℂ} (hG : DifferentiableOn ℂ G (ball 0 1))
   rw [holL_eq]
   refine ContinuousLinearMap.IsPositive.smul_of_nonneg ?_ (Complex.zero_le_real.2 (by positivity))
   have := (holA_isPositive k hG hr).conj_adjoint (holH G k r * star (holR G k r))
-  simpa [ContinuousLinearMap.star_eq_adjoint, ContinuousLinearMap.mul_def] using this
+  simpa! only [ContinuousLinearMap.star_eq_adjoint, ContinuousLinearMap.mul_def, ContinuousLinearMap.comp_assoc] using this
 
 /-- `L_{r,k}` is positive and trace class. -/
 lemma holL_isPosTraceClass {G : ℂ → ℂ} (hG : DifferentiableOn ℂ G (ball 0 1)) {r : ℝ}
@@ -1446,7 +1528,8 @@ lemma bessel_eq_zero_of_cauchy {k : ℝ} {n : ℤ} {R : ℝ} {h h' : ℝ → ℂ
       (v t ((fun _ : ℝ => ((0 : ℂ), (0 : ℂ))) t)) t ∧ ((0 : ℂ), (0 : ℂ)) ∈ (univ : Set (ℂ × ℂ)) := by
     intro t _
     refine ⟨?_, trivial⟩
-    simpa [hv] using hasDerivAt_const t ((0 : ℂ), (0 : ℂ))
+    convert! hasDerivAt_const t ((0 : ℂ), (0 : ℂ)) using 1
+    simp [v]
   have := ODE_solution_unique_of_mem_Ioo hlip ⟨hερ₀, hρ₀.2⟩ hsol hzero (by simp [h0, h0'])
     ⟨hερ, hρ.2⟩
   simpa using congrArg Prod.fst this
@@ -1531,8 +1614,7 @@ lemma integral_exp_mul_deriv_of_periodic {F F' : ℝ → ℂ} (hF : ∀ θ, HasD
       (cexp (-(n * θ * I)) * (-(n * I))) θ := by
     intro θ
     have := (((hasDerivAt_id θ).ofReal_comp).const_mul (n : ℂ)).mul_const I |>.neg |>.cexp
-    convert this using 1
-    simp
+    simpa! only [Pi.neg_apply, id_eq, Complex.ofReal_one, mul_one] using this
   have hcu : Continuous fun θ : ℝ => cexp (-(n * θ * I)) * (-(n * I)) := by fun_prop
   rw [intervalIntegral.integral_mul_deriv_eq_deriv_mul (fun θ _ => hu θ) (fun θ _ => hF θ)
     (hcu.intervalIntegrable _ _) (hF'.intervalIntegrable _ _)]
@@ -1599,8 +1681,7 @@ lemma hasDerivAt_ofReal_mul (e : ℂ) (ρ : ℝ) :
 lemma hasDerivAt_polar_angle (ρ θ : ℝ) :
     HasDerivAt (fun θ : ℝ => (ρ : ℂ) * cexp (θ * I)) ((ρ : ℂ) * cexp (θ * I) * I) θ := by
   have := ((((hasDerivAt_id θ).ofReal_comp).mul_const I).cexp).const_mul (ρ : ℂ)
-  convert this using 1
-  simp [mul_assoc]
+  simpa! only [id_eq, Complex.ofReal_one, one_mul, mul_assoc] using this
 
 /-- Pointwise polar form of the Helmholtz equation:
 `ρ² ∂²_ρ g + ∂²_θ g + ρ ∂_ρ g + k² ρ² g = 0` at `z = ρ e^{iθ}`. -/
@@ -3031,6 +3112,7 @@ lemma tendsto_angCoeff_zero {v : ℂ → ℂ} {R : ℝ} (hR : 0 < R) (hv : Conti
     push_cast; ring
   rw [dist_eq_norm, e]
   refine (norm_inv_two_pi_mul_integral_le fun θ => ?_).trans_lt (by linarith : ε / 2 < ε)
+  rw [← dist_eq_norm]
   refine (hηv ?_).le
   rw [dist_zero_right, norm_mul, Complex.norm_exp_ofReal_mul_I, mul_one, Complex.norm_real,
     Real.norm_eq_abs, abs_of_pos hρ.1]
@@ -3362,7 +3444,7 @@ lemma lintegral_polar_eq {F : ℂ → ℝ≥0∞} (hF : Measurable F) :
 
 lemma lintegral_enorm_sq_lt_top {E : Type*} [NormedAddCommGroup E] {f : ℂ → E}
     (hf : MemLp f 2) : ∫⁻ z, ‖f z‖ₑ ^ 2 < ∞ := by
-  have := ((memLp_two_iff_integrable_sq_norm hf.1).1 hf).hasFiniteIntegral
+  have := ((memLp_two_iff_integrable_sq_norm hf.aestronglyMeasurable).1 hf).hasFiniteIntegral
   unfold HasFiniteIntegral at this
   convert this using 3 with z
   rw [enorm_pow, enorm_norm]
@@ -3416,7 +3498,7 @@ theorem helmholtz_exterior_eq_zero {k : ℝ} (hk : 0 < k) {R0 : ℝ} {w : ℂ �
       · simp [hF, hz]
       · simp [hF, hz]
     refine h1.trans_lt ?_
-    rw [hG, lintegral_add_left' ((hw2.1.enorm.pow_const 2))]
+    rw [hG, lintegral_add_left' ((hw2.aestronglyMeasurable.enorm.pow_const 2))]
     exact ENNReal.add_lt_top.2 ⟨lintegral_enorm_sq_lt_top hw2, lintegral_enorm_sq_lt_top hdw2⟩
   have hFU : ∀ ρ θ : ℝ, a < ρ → F ((ρ : ℂ) * cexp (θ * I)) = G ((ρ : ℂ) * cexp (θ * I)) :=
     fun ρ θ hρ => by simp [hF, hpol ρ θ hρ]
@@ -3569,13 +3651,13 @@ lemma integral_fderiv_fderiv_mul {w ψ : ℂ → ℂ} (hw : ContDiff ℝ 2 w) (h
     integral_mul_fderiv_eq_neg_fderiv_mul_of_integrable
       ((hhcont.mul hgcont).integrable_of_hasCompactSupport hgc.mul_left)
       ((hψ.continuous.mul hdg).integrable_of_hasCompactSupport hdgc.mul_left)
-      ((hψ.continuous.mul hgcont).integrable_of_hasCompactSupport hgc.mul_left) hψd hgd
+      ((hψ.continuous.mul hgcont).integrable_of_hasCompactSupport hgc.mul_left) (fun x _ => hψd x) (fun x _ => hgd x)
   -- second integration by parts: `∫ w ∂h = -∫ ∂w h`
   have e2 : ∫ x, w x * fderiv ℝ h x v = -∫ x, fderiv ℝ w x v * h x :=
     integral_mul_fderiv_eq_neg_fderiv_mul_of_integrable
       ((hgcont.mul hhcont).integrable_of_hasCompactSupport hgc.mul_right)
       ((hw.continuous.mul hdh).integrable_of_hasCompactSupport hwc.mul_right)
-      ((hw.continuous.mul hhcont).integrable_of_hasCompactSupport hwc.mul_right) hwd hhd
+      ((hw.continuous.mul hhcont).integrable_of_hasCompactSupport hwc.mul_right) (fun x _ => hwd x) (fun x _ => hhd x)
   have l1 : ∀ x, fderiv ℝ (fderiv ℝ w) x v v * ψ x = ψ x * fderiv ℝ g x v := fun x => by
     rw [fderiv_fderiv_apply_eq hw, mul_comm]
   have l2 : ∀ x, w x * fderiv ℝ (fderiv ℝ ψ) x v v = w x * fderiv ℝ h x v := fun x => by
@@ -3739,8 +3821,12 @@ lemma integrable_memLp_of_le {f : ℂ → ℂ} (hf : AEStronglyMeasurable f) {D 
 
 lemma integral_fourier_mul_schwartz {K : ℂ → ℂ} (hK : Integrable K) (ψ : 𝓢(ℂ, ℂ)) :
     ∫ ξ, 𝓕 K ξ * ψ ξ = ∫ x, K x * 𝓕 (ψ : ℂ → ℂ) x := by
-  simpa using VectorFourier.integral_bilin_fourierIntegral_eq_flip (ContinuousLinearMap.mul ℂ ℂ)
-    (L := innerₗ ℂ) Real.continuous_fourierChar continuous_inner hK ψ.integrable
+  have h := VectorFourier.integral_bilin_fourierIntegral_eq_flip
+      (μ := (volume : Measure ℂ)) (ν := (volume : Measure ℂ))
+      (ContinuousLinearMap.mul ℂ ℂ) (L := innerₗ ℂ)
+      Real.continuous_fourierChar continuous_inner hK ψ.integrable
+  simpa [VectorFourier.fourierIntegral, Real.fourier_eq,
+    ContinuousLinearMap.mul, LinearMap.flip_apply, real_inner_comm] using h
 
 /-- For real-valued `ψ`, conjugating the inverse Fourier transform gives the Fourier transform. -/
 lemma inner_fourier_aux (f g : Lp ℂ 2 (volume : Measure ℂ)) : ⟪f, 𝓕 g⟫_ℂ = ⟪𝓕⁻ f, g⟫_ℂ := by
@@ -5049,7 +5135,7 @@ def gradReg (ε : ℝ) (y : ℂ) : ℂ →L[ℝ] ℝ := (‖y‖ ^ 2 + ε ^ 2)�
 
 lemma continuous_gradReg {ε : ℝ} (hε : ε ≠ 0) : Continuous (gradReg ε) := by
   unfold gradReg
-  refine Continuous.smul ?_ (innerSL ℝ (E := ℂ)).continuous
+  refine Continuous.smul (f := fun y : ℂ => (‖y‖ ^ 2 + ε ^ 2)⁻¹) ?_ (innerSL ℝ (E := ℂ)).continuous
   refine Continuous.inv₀ (by fun_prop) fun y => ?_
   positivity
 
@@ -5091,7 +5177,10 @@ lemma norm_gradReg_sub_gradKer_le {ε : ℝ} (y : ℂ) : ‖gradReg ε y - gradK
   · simp [h, gradReg, gradKer]
   have hy : 0 < ‖y‖ := norm_pos_iff.2 h
   unfold gradReg gradKer
-  rw [← sub_smul, norm_smul, innerSL_apply_norm, Real.norm_eq_abs]
+  have hsmul : (‖y‖ ^ 2 + ε ^ 2)⁻¹ • innerSL ℝ y - (‖y‖ ^ 2)⁻¹ • innerSL ℝ y =
+      ((‖y‖ ^ 2 + ε ^ 2)⁻¹ - (‖y‖ ^ 2)⁻¹) • innerSL ℝ y := by
+    rw [sub_smul]
+  rw [hsmul, norm_smul, innerSL_apply_norm, Real.norm_eq_abs]
   have h1 : 0 < (‖y‖ ^ 2)⁻¹ - (‖y‖ ^ 2 + ε ^ 2)⁻¹ + (‖y‖ ^ 2 + ε ^ 2)⁻¹ := by
     simp; positivity
   have h2 : (‖y‖ ^ 2 + ε ^ 2)⁻¹ ≤ (‖y‖ ^ 2)⁻¹ :=
@@ -5191,7 +5280,7 @@ lemma hasFDerivAt_logPotReg (hf : BddSupp f M ρ) {ε : ℝ} (hε : 0 < ε) (w :
   · refine Eventually.of_forall fun η x _ => ?_
     have h := ((hasFDerivAt_logReg hε.ne' (x - η)).comp x
       ((hasFDerivAt_id x).sub_const η)).mul_const (f η)
-    convert h using 1
+    convert! h using 1
 
 lemma tendsto_logPotReg (hf : BddSupp f M ρ) (w : ℂ) :
     Tendsto (fun n : ℕ => logPotReg (1 / (n + 1 : ℝ)) f w) atTop (𝓝 (logPot f w)) := by
@@ -5274,7 +5363,9 @@ lemma norm_gradPotReg_sub_le (hf : BddSupp f M ρ) {ε : ℝ} (hε : 0 < ε) {R 
   calc ‖∫ η, (f η • gradReg ε (w - η) - f η • gradKer (w - η))‖
       ≤ ∫ η, M * (ball 0 R').indicator D (w - η) := by
         refine norm_integral_le_of_norm_le hgi (Eventually.of_forall fun η => ?_)
-        rw [← smul_sub, norm_smul, Real.norm_eq_abs]
+        have hsmul : f η • gradReg ε (w - η) - f η • gradKer (w - η) =
+            f η • (gradReg ε (w - η) - gradKer (w - η)) := by rw [smul_sub]
+        rw [hsmul, norm_smul, Real.norm_eq_abs]
         by_cases hη : ρ < ‖η‖
         · simp only [hf.supp η hη, abs_zero, zero_mul]
           exact mul_nonneg hf.nonneg_M (indicator_nonneg (fun _ _ => norm_nonneg _) _)
@@ -5331,7 +5422,10 @@ lemma continuous_gradPotReg (hf : BddSupp f M ρ) {ε : ℝ} (hε : 0 < ε) :
     rw [norm_smul, Real.norm_eq_abs]
     exact mul_le_mul_of_nonneg_left (norm_gradReg_le hε _) (abs_nonneg _)
   · exact Eventually.of_forall fun η =>
-      continuous_const.smul (hcg.comp (continuous_id.sub continuous_const))
+      (by
+        exact Continuous.smul (f := fun _ : ℂ => f η)
+          (g := fun x : ℂ => gradReg ε (x - η)) continuous_const
+          (hcg.comp (continuous_id.sub continuous_const)))
 
 /-- **Derivative of the logarithmic potential.** -/
 theorem hasFDerivAt_logPot (hf : BddSupp f M ρ) (w : ℂ) :
@@ -5394,7 +5488,8 @@ lemma integral_Ioi_fderiv_radial {h : ℂ → ℝ} (hh : ContDiff ℝ 1 h) (hc :
       simpa using this
     have h2 := (hd (w - r * e)).hasFDerivAt.comp_hasDerivAt r h1
     have h3 := h2.neg
-    simpa [g] using h3
+    convert! h3 using 1
+    simp only [map_neg, neg_neg]
   have hcont : Continuous fun r : ℝ => fderiv ℝ h (w - r * e) e :=
     (hcd.comp (continuous_const.sub (Complex.continuous_ofReal.mul continuous_const))).clm_apply
       continuous_const
@@ -6507,16 +6602,16 @@ theorem disk_weak_regularity {ρw : ℂ → ℝ} (hρ : ContDiffOn ℝ 1 ρw (ba
   have hρm : AEStronglyMeasurable ρw μD := hρ.continuousOn.aestronglyMeasurable measurableSet_ball
   have hg : MemLp (fun z => k ^ 2 * ρw z * v z) 2 μD := by
     refine MemLp.of_le (hv.const_mul (k ^ 2 * |Mρ|))
-      ((aestronglyMeasurable_const.mul hρm).mul hv.1) ?_
+      ((aestronglyMeasurable_const.mul hρm).mul hv.aestronglyMeasurable) ?_
     filter_upwards [ae_restrict_mem measurableSet_ball] with z hz
     simp only [Real.norm_eq_abs, abs_mul, abs_pow, abs_abs, sq_abs]
     have h1 := (hρb z hz).trans (le_abs_self Mρ)
     have h3 := mul_le_mul_of_nonneg_left h1 (sq_nonneg k)
     exact mul_le_mul_of_nonneg_right h3 (abs_nonneg _)
-  set f := D.indicator (hg.1.mk _)
-  have hfm : StronglyMeasurable f := hg.1.stronglyMeasurable_mk.indicator measurableSet_ball
+  set f := D.indicator (hg.aestronglyMeasurable.mk _)
+  have hfm : StronglyMeasurable f := hg.aestronglyMeasurable.stronglyMeasurable_mk.indicator measurableSet_ball
   have hfe : f =ᵐ[μD] fun z => k ^ 2 * ρw z * v z := by
-    filter_upwards [hg.1.ae_eq_mk, ae_restrict_mem measurableSet_ball] with z hz hzD
+    filter_upwards [hg.aestronglyMeasurable.ae_eq_mk, ae_restrict_mem measurableSet_ball] with z hz hzD
     simp only [f, indicator_of_mem hzD]; exact hz.symm
   have hf : MemLp f 2 μD := hg.ae_eq hfe.symm
   set Φ₀ := greenPotD f
@@ -6613,7 +6708,7 @@ lemma norm_toLp_sq {f : ℂ → ℝ} (hf : MemLp f 2 (volume.restrict (ball (0 :
 lemma memLp_mul_weight {a f : ℂ → ℝ} (ha : Measurable a) {A : ℝ}
     (hA : ∀ η ∈ ball (0 : ℂ) 1, |a η| ≤ A) (hf : MemLp f 2 (volume.restrict (ball (0 : ℂ) 1))) :
     MemLp (fun η => a η * f η) 2 (volume.restrict (ball (0 : ℂ) 1)) := by
-  refine MemLp.of_le (hf.const_mul A) (ha.aestronglyMeasurable.mul hf.1) ?_
+  refine MemLp.of_le (hf.const_mul A) (ha.aestronglyMeasurable.mul hf.aestronglyMeasurable) ?_
   filter_upwards [ae_restrict_mem measurableSet_ball] with η hη
   simp only [Real.norm_eq_abs, abs_mul]
   have hA0 : |a η| ≤ |A| := (hA η hη).trans (le_abs_self A)
@@ -6623,7 +6718,7 @@ lemma integral_sq_mul_weight_le {a f : ℂ → ℝ} {A : ℝ}
     (hA : ∀ η ∈ ball (0 : ℂ) 1, |a η| ≤ A) (hf : MemLp f 2 (volume.restrict (ball (0 : ℂ) 1))) :
     ∫ η, (a η * f η) ^ 2 ∂(volume.restrict (ball (0 : ℂ) 1)) ≤ A ^ 2 * ∫ η, f η ^ 2 ∂(volume.restrict (ball (0 : ℂ) 1)) := by
   rw [← integral_const_mul]
-  have hf2 : Integrable (fun η => f η ^ 2) (volume.restrict (ball (0 : ℂ) 1)) := (memLp_two_iff_integrable_sq hf.1).1 hf
+  have hf2 : Integrable (fun η => f η ^ 2) (volume.restrict (ball (0 : ℂ) 1)) := (memLp_two_iff_integrable_sq hf.aestronglyMeasurable).1 hf
   refine integral_mono_of_nonneg (Eventually.of_forall fun _ => sq_nonneg _)
     (hf2.const_mul _) ?_
   filter_upwards [ae_restrict_mem measurableSet_ball] with η hη
@@ -7171,7 +7266,7 @@ lemma memLp_comp_holomorphic {s : Set ℂ} (hs : IsOpen s) {G : ℂ → ℂ}
     hG.continuousOn.aemeasurable hs.measurableSet
   have hm : AEStronglyMeasurable (u ∘ G) (volume.restrict s) := hum.aestronglyMeasurable.comp_aemeasurable hGm
   refine (memLp_two_iff_integrable_sq hm).2 ⟨hm.pow 2, ?_⟩
-  have hu2 := ((memLp_two_iff_integrable_sq hu.1).1 hu).2
+  have hu2 := ((memLp_two_iff_integrable_sq hu.aestronglyMeasurable).1 hu).2
   unfold HasFiniteIntegral at hu2 ⊢
   have key := lintegral_image_holomorphic hs hG hinj (fun z => ‖u z ^ 2‖ₑ)
   set a := ENNReal.ofReal (c ^ 2)
@@ -7359,8 +7454,8 @@ theorem weak_dirichlet_regularity_proof (F : ℂ → ℂ) (U : Set ℂ) (hU : Is
   have hGinj : InjOn G (ball 0 R0) := fun a ha b hb hab =>
     mul_left_cancel₀ hr0 (hinj (hmaps ha) (hmaps hb) hab)
   -- a strongly measurable representative
-  set ũ := hu.1.mk u
-  have hue : u =ᵐ[volume.restrict (F '' ball 0 r)] ũ := hu.1.ae_eq_mk
+  set ũ := hu.aestronglyMeasurable.mk u
+  have hue : u =ᵐ[volume.restrict (F '' ball 0 r)] ũ := hu.aestronglyMeasurable.ae_eq_mk
   have hũ : MemLp ũ 2 (volume.restrict (G '' ball 0 1)) := by
     rw [hball]; exact hu.ae_eq hue
   have hwG : WeakDirichletHelmholtz G 1 k ũ := by
@@ -7372,7 +7467,7 @@ theorem weak_dirichlet_regularity_proof (F : ℂ → ℂ) (U : Set ℂ) (hU : Is
     filter_upwards [hue] with z hz
     rw [hz]
   obtain ⟨V, φ, hVo, hVsub, h1, h2, h3, h4, h5⟩ :=
-    conformal_weak_regularity hR0 hG hGinj hu.1.stronglyMeasurable_mk hũ hwG
+    conformal_weak_regularity hR0 hG hGinj hu.aestronglyMeasurable.stronglyMeasurable_mk hũ hwG
   rw [hball] at h2 h3 h5
   rw [hcl] at hVsub
   rw [hsph] at h4
@@ -7542,7 +7637,8 @@ lemma integral_fderiv_apply_eq_zero {g : ℂ → ℝ} (hg : ContDiff ℝ 1 g) (h
     (f := fun _ : ℂ => (1 : ℝ)) (g := g) (v := v) (by simp)
     (by simpa using hd.integrable_of_hasCompactSupport hdc)
     (by simpa using hg.continuous.integrable_of_hasCompactSupport hgc)
-    (differentiable_const _) (hg.differentiable (by norm_num))
+    (fun x _ => differentiableAt_const (c := (1 : ℝ)))
+    (fun x _ => (hg.differentiable (by norm_num)).differentiableAt)
   simpa using h
 
 /-- The Green current `Ψ ∂_v W - W ∂_v Ψ`. -/
@@ -8096,7 +8192,8 @@ theorem green_first (hw : DiskNice w) (hv : DiskNice v) :
           (hv.fderiv_continuousOn.clm_apply continuousOn_const)).add
           ((hw.fderiv_continuousOn.clm_apply continuousOn_const).mul
           (hv.fderiv_continuousOn.clm_apply continuousOn_const)))
-    rw [setIntegral_congr_fun measurableSet_ball (hD c), setIntegral_lin3 iw ig iv]
+    rw [setIntegral_congr_fun measurableSet_ball (hD c)]
+    simpa only [Pi.pow_apply] using setIntegral_lin3 iw ig iv (2 * c) (c ^ 2)
   have e3 : ∀ c : ℝ, ∫ z in ball (0 : ℂ) 1, (w z + c * v z) *
         Laplacian.laplacian (fun y => w y + c * v y) z =
       (∫ z in ball (0 : ℂ) 1, w z * Laplacian.laplacian w z) +

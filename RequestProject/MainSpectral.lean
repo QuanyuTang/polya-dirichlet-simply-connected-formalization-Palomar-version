@@ -1074,9 +1074,11 @@ def extDisk (φ : closedBall (0 : ℂ) 1 → ℝ) (z : ℂ) : ℝ :=
 
 lemma extDisk_continuousOn (φ : BoundedContinuousFunction (closedBall (0 : ℂ) 1) ℝ) :
     ContinuousOn (extDisk φ) (closedBall 0 1) := by
-  rw [continuousOn_iff_continuous_restrict]
-  have : (closedBall (0 : ℂ) 1).restrict (extDisk φ) = φ := by
-    funext x; simp [extDisk, x.2]
+  rw [continuousOn_iff_continuous_domRestrict]
+  have : (closedBall (0 : ℂ) 1).domRestrict (extDisk φ) = φ := by
+    funext x
+    change extDisk φ x = φ x
+    simp [extDisk, x.2]
   rw [this]; exact φ.continuous
 
 lemma abs_extDisk_le (φ : BoundedContinuousFunction (closedBall (0 : ℂ) 1) ℝ) (z : ℂ) :
@@ -1144,7 +1146,9 @@ theorem greenOp_isCompactOperator (ha : Measurable a) (hA : ∀ η ∈ ball (0 :
       (Real.sqrt_nonneg (∫ η in ball (0 : ℂ) 1, h f η ^ 2))
     refine ⟨δ, hδ, fun x hx => ?_⟩
     rw [Real.dist_eq]
-    exact H x (mem_closedBall_zero_iff.1 x.2) hx (h f) (hh f)
+    have hx' : ‖(x : ℂ) - (x₀ : ℂ)‖ < δ := by
+      simpa only [Subtype.dist_eq, dist_eq_norm] using hx
+    exact H x (mem_closedBall_zero_iff.1 x.2) hx' (h f) (hh f)
       (Real.sq_sqrt (integral_nonneg fun _ => sq_nonneg _)).ge
   set P : Lp ℝ 2 (volume.restrict (ball (0 : ℂ) 1)) → BoundedContinuousFunction (closedBall (0 : ℂ) 1) ℝ := fun f =>
     BoundedContinuousFunction.mkOfCompact ⟨_, hcont f⟩
@@ -1166,11 +1170,17 @@ theorem greenOp_isCompactOperator (ha : Measurable a) (hA : ∀ η ∈ ball (0 :
       refine ⟨δ, hδ, fun x hx i => ?_⟩
       obtain ⟨_, ⟨f, hf, rfl⟩⟩ := i
       rw [Real.dist_eq, abs_sub_comm]
-      exact H x (mem_closedBall_zero_iff.1 x.2) hx (h f) (hh f)
+      have hx' : ‖(x : ℂ) - (x₀ : ℂ)‖ < δ := by
+        simpa only [Subtype.dist_eq, dist_eq_norm] using hx
+      exact H x (mem_closedBall_zero_iff.1 x.2) hx' (h f) (hh f)
         (hhB f (mem_closedBall_zero_iff.1 hf))
   set Q := weightMapLin ha hA
   have hQc : Continuous Q := by
-    simpa using (Q.mkContinuous _ (weightMapLin_bound ha hA)).continuous
+    dsimp [Q]
+    refine Continuous.congr
+      ((weightMapLin ha hA).mkContinuous _ (weightMapLin_bound ha hA)).continuous ?_
+    intro x
+    rfl
   have hTQP : ∀ f, greenOp ha hA f = Q (P f) := by
     intro f
     refine Lp.ext ?_
@@ -2150,7 +2160,8 @@ lemma fderiv_herglotzWave_sum {m : ℕ} (k : ℝ) (a : Fin m → CircFun) (c : F
       ∑ i, c i * fderiv ℝ (herglotzWave k (a i)) z w := by
   simp only [fderiv_herglotzWave_apply, herglotzVec_sum, herglotzDir_sum, map_sum, map_smul,
     smul_eq_mul]
-  rw [show (∑ i, c i • herglotzVec k (a i) z) 0 = ∑ i, c i * herglotzVec k (a i) z 0 by simp]
+  rw [lp.coeFn_sum]
+  simp only [lp.coeFn_smul, Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
   rw [Finset.mul_sum, Finset.mul_sum, ← Finset.sum_add_distrib, Finset.mul_sum]
   refine Finset.sum_congr rfl fun i _ => ?_
   ring
@@ -2210,8 +2221,7 @@ lemma hasDerivAt_radialCurve (F : ℂ → ℂ) {U : Set ℂ} (hU : IsOpen U)
   have h1 : HasDerivAt (fun t : ℝ => (t : ℂ) * exp (θ * I)) (1 * exp (θ * I)) s :=
     (hasDerivAt_id s).ofReal_comp.mul_const _
   have h2 := ((hF.differentiableAt (hU.mem_nhds hs)).hasDerivAt).comp s h1
-  convert h2 using 1
-  ring
+  convert h2 using 1 <;> simp [Function.comp_def, mul_comm, mul_left_comm, mul_assoc]
 
 /-- **Pole asymptotics.** Functions `φ_i` that are `C¹` near `∂Ω_{r_*}`, vanish on it and have
 linearly independent normal derivatives have positive definite boundary matrix at every radius
@@ -2296,7 +2306,11 @@ lemma boundary_pole_asymptotic (F : ℂ → ℂ) (U : Set ℂ) (hU : IsOpen U)
       have h3 := (hφd i _ (haV _ hs θ)).comp_hasDerivAt _ h2
       have h4 := h3.scomp t h1
       convert h4 using 1
-      simp only [hg', hRf, hpid _ hs, Complex.real_smul]
+      · rw [hg]
+        funext x
+        simp [Function.comp_def]
+      · rw [hg']
+        simp [hRf, hpid _ hs, Complex.real_smul]
     have hint : IntervalIntegrable g' MeasureTheory.volume 0 1 :=
       (continuous_const.mul ((hRc i).comp (f := fun t : ℝ => (ρ + t * (rs - ρ), θ))
         (by fun_prop))).intervalIntegrable _ _
@@ -2921,7 +2935,8 @@ theorem dirichletEigenvalue_ge_of_subset_closedBall (Ω : Set ℂ) (c : ℂ) {ρ
     unfold l2NormSq
     have h2 : MemLp u 2 volume := htest.1.continuous.memLp_of_hasCompactSupport htest.2.1
     have := h2.eLpNorm_lt_top
-    rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by norm_num) (by norm_num)] at this
+    rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by norm_num) (by norm_num)
+      h2.aestronglyMeasurable] at this
     simpa using this.ne
   unfold rayleigh
   rw [ENNReal.le_div_iff_mul_le (Or.inl hl2pos.ne') (Or.inl hl2fin)]
@@ -3540,8 +3555,13 @@ lemma holR_scale (hG : DifferentiableOn ℂ G (ball 0 1)) {s : ℝ} (hs0 : 0 ≤
     intro t ht
     have h1 := (hd (s * t) (hmaps ht)).scomp t
       ((hasDerivWithinAt_id t (Ico 0 1)).const_mul s) hmaps
-    rw [coefRad_scale, smul_mul_assoc]
-    simpa [Function.comp_def, ← Complex.coe_smul] using h1
+    convert h1 using 1
+    · simp [Function.comp_def]
+    · rw [coefRad_scale]
+      apply ContinuousLinearMap.ext
+      intro x
+      simp only [ContinuousLinearMap.mul_apply, ContinuousLinearMap.smul_apply, mul_one]
+      exact (RCLike.real_smul_eq_coe_smul (K := ℂ) (E := L2N) s _).symm
   have hsub : Icc 0 r ⊆ Ico (0 : ℝ) 1 := Icc_subset_Ico_right hr.2
   have heq := eqOn_of_linear_ode_Icc
     ((continuousOn_coefRad k isOpen_ball hGs seg_mem_ball).mono hsub)
@@ -4048,7 +4068,8 @@ lemma weakTestFunctional_coreJet (Ω : Set ℂ) (i : Fin 2)
       φ.property.2.1.mul_right)
     ((φ.property.1.continuous.mul u.property.1.continuous).integrable_of_hasCompactSupport
       φ.property.2.1.mul_right)
-    (φ.property.1.differentiable (by simp)) (u.property.1.differentiable (by simp))
+    (fun x _ => (φ.property.1.differentiable (by simp)).differentiableAt)
+    (fun x _ => (u.property.1.differentiable (by simp)).differentiableAt)
   rw [hibp]
   have hcomm : (∫ z, (u : ℂ → ℝ) z * fderiv ℝ (φ : ℂ → ℝ) z (direction i)) =
       ∫ z, fderiv ℝ (φ : ℂ → ℝ) z (direction i) * (u : ℂ → ℝ) z := by
@@ -4202,8 +4223,8 @@ lemma inner_domainL2 (Ω : Set ℂ) (f g : DomainL2 Ω) :
 lemma inclusion_coreToH01_coeFn (Ω : Set ℂ) (u : SmoothCore Ω) :
     (inclusion Ω (coreToH01 Ω u) : ℂ → ℝ) =ᵐ[volume.restrict Ω] (u : ℂ → ℝ) := by
   apply (inclusion_coeFn Ω (coreToH01 Ω u)).trans
-  simpa only [value_coreToH01] using
-    (ae_restrict_of_ae (core_memLp Ω u).coeFn_toLp)
+  change ((core_memLp Ω u).toLp (u : ℂ → ℝ) : ℂ → ℝ) =ᵐ[volume.restrict Ω] _
+  exact ae_restrict_of_ae (core_memLp Ω u).coeFn_toLp
 
 lemma inclusion_dense (Ω : Set ℂ) (hΩ : IsOpen Ω) : DenseRange (inclusion Ω) := by
   have hperp : (inclusion Ω).rangeᗮ = ⊥ := by
@@ -4490,7 +4511,7 @@ theorem exists_nonzero_orthogonal (hInfinite : ¬ Module.Finite ℝ H)
   refine ⟨x, hx0, ?_⟩
   intro i hi
   have hzero := congrFun (LinearMap.mem_ker.mp hx) (⟨i, hi⟩ : Fin n)
-  simpa only [coordinates, Pi.zero_apply] using hzero
+  simpa [coordinates] using hzero
 
 /-- Finite successive maximizers of the quadratic form of an operator. The entries
 outside `i < n` are unused. -/
@@ -4655,7 +4676,7 @@ theorem threshold_le_last (f : PositiveEigenFamily T j) (hj : 0 < j)
   have hxOrth : ∀ l < j - 1, ⟪f.vectors l, (x : H)⟫_ℝ = 0 := by
     intro l hl
     have hzero := congrFun (LinearMap.mem_ker.mp hx) (⟨l, hl⟩ : Fin (j - 1))
-    simpa only [coordinates, Pi.zero_apply] using hzero
+    simpa [coordinates] using hzero
   have hLower : s * ‖(x : H)‖ ^ 2 ≤ ⟪T (x : H), (x : H)⟫_ℝ :=
     quadratic_lower_on_eigenspan hg ν (fun i => (hν i).1) (fun i => (hν i).2) x.property
   have hUpper := f.maximal (j - 1) (by omega) (x : H) hxOrth
@@ -4799,9 +4820,8 @@ theorem adjoint_eq_zero_iff (J : V →L[ℝ] H) (hJdense : DenseRange J) (f : H)
   · intro hf
     have hd : Dense (J.range : Set H) := hJdense
     apply hd.eq_zero_of_inner_left (𝕜 := ℝ)
-    intro y
-    obtain ⟨v, hv⟩ := y.property
-    rw [← hv]
+    intro y hy
+    obtain ⟨v, rfl⟩ := hy
     change ⟪f, J v⟫_ℝ = 0
     rw [← ContinuousLinearMap.adjoint_inner_left J v f, hf, inner_zero_left]
   · rintro rfl
@@ -4839,17 +4859,20 @@ omit [CompleteSpace H] in
 
 omit [CompleteSpace H] in
 theorem partial_ker_eq_bot (K : H →L[ℝ] H) (hKinj : Function.Injective K) :
-    (K.toLinearMap.toPMap ⊤).toFun.ker = ⊥ := by
-  rw [LinearMap.ker_eq_bot']
+    (K.toLinearMap.toPMap ⊤).ker = ⊥ := by
+  rw [LinearPMap.ker_eq_bot']
   intro f hf
   apply Subtype.ext
-  exact hKinj (by simpa using hf)
+  apply hKinj
+  change K (f : H) = 0 at hf
+  simpa using hf
 
 omit [CompleteSpace H] in
 @[simp] theorem apply_vector (K : H →L[ℝ] H) (hKinj : Function.Injective K)
     (f : H) : operator K (domainVector K f) = f := by
-  exact LinearPMap.inverse_apply_eq (partial_ker_eq_bot K hKinj)
-    (x := ⟨f, Submodule.mem_top⟩) rfl
+  change (K.toLinearMap.toPMap ⊤).inverse ⟨K f, _⟩ = (f : H)
+  simpa using (LinearPMap.inverse_apply_eq (f := K.toLinearMap.toPMap ⊤)
+    (partial_ker_eq_bot K hKinj) (x := ⟨f, Submodule.mem_top⟩) rfl)
 
 omit [CompleteSpace H] in
 theorem inverse_apply (K : H →L[ℝ] H) (hKinj : Function.Injective K)
@@ -5989,7 +6012,7 @@ theorem exists_trial_vector_orthogonal (J : V →L[ℝ] H)
   refine ⟨u, u.property, (fun h => hu0 (Subtype.ext h)), ?_⟩
   intro l hl
   have hzero := congrFun (LinearMap.mem_ker.mp hu) (⟨l, hl⟩ : Fin (j - 1))
-  simpa only [coordinates, Pi.zero_apply] using hzero
+  simpa [coordinates] using hzero
 
 theorem lower_rayleigh_of_orthogonality (J : V →L[ℝ] H)
     (hJ : Function.Injective J) (B : V →L[ℝ] V →L[ℝ] ℝ)
@@ -6168,7 +6191,8 @@ lemma norm_dilate (R : ℝ) (hR : 0 < R) (z : ℂ) :
   rw [dilate, norm_mul, Complex.norm_real, Real.norm_of_nonneg hR.le]
 
 lemma dilate_hasDerivAt (R : ℝ) (z : ℂ) : HasDerivAt (dilate R) (R : ℂ) z := by
-  simpa [dilate] using (hasDerivAt_id z).const_mul (R : ℂ)
+  change HasDerivAt (fun y : ℂ => (R : ℂ) * y) (R : ℂ) z
+  simpa using (hasDerivAt_const_mul (R : ℂ) (x := z))
 
 lemma dilate_injective (R : ℝ) (hR : 0 < R) : Function.Injective (dilate R) := by
   have hRC : (R : ℂ) ≠ 0 := by exact_mod_cast hR.ne'
@@ -6278,7 +6302,9 @@ lemma dirichletEnergy_dilate_le (R : ℝ) (hR : 0 < R) {u : ℂ → ℝ}
   have h := dirichletEnergy_pullback_le isOpen_univ hPhi
     (dilate_injective R hR).injOn hu
     (fun z hz => (hz (mem_univ z)).elim)
-  simpa only [indicator_univ] using h
+  have hdilate : (dilateFunction R u : ℂ → ℝ) = (fun z => u (dilate R z)) := rfl
+  rw [hdilate]
+  simpa only [Set.indicator_univ] using h
 
 /-- Dirichlet energy is invariant under a two-dimensional dilation. Both
 inequalities follow from conformal pullback, using the true inverse dilation. -/
@@ -7027,13 +7053,21 @@ theorem mem_complexified_eigenspace_iff (Ω : Set ℂ)
   · intro h
     constructor
     · have hr := congrArg (reL2 Ω) h
-      simpa [reL2_smul_complex] using hr
+      change reL2 Ω ((complexify Ω T) f) = reL2 Ω ((μ : ℂ) • f) at hr
+      rw [reL2_complexify, reL2_smul_complex] at hr
+      simpa using hr
     · have hi := congrArg (imL2 Ω) h
-      simpa [imL2_smul_complex] using hi
+      change imL2 Ω ((complexify Ω T) f) = imL2 Ω ((μ : ℂ) • f) at hi
+      rw [imL2_complexify, imL2_smul_complex] at hi
+      simpa using hi
   · rintro ⟨hr, hi⟩
     apply reL2_imL2_ext Ω
-    · simpa [reL2_smul_complex] using hr
-    · simpa [imL2_smul_complex] using hi
+    · change reL2 Ω ((complexify Ω T) f) = reL2 Ω ((μ : ℂ) • f)
+      rw [reL2_complexify, reL2_smul_complex]
+      simpa using hr
+    · change imL2 Ω ((complexify Ω T) f) = imL2 Ω ((μ : ℂ) • f)
+      rw [imL2_complexify, imL2_smul_complex]
+      simpa using hi
 
 theorem complexify_hasEigenvalue_iff (Ω : Set ℂ)
     (T : DomainL2 Ω →L[ℝ] DomainL2 Ω) (μ : ℝ) :
@@ -7103,7 +7137,11 @@ theorem finrank_complexified_eigenspace (Ω : Set ℂ)
   letI : Module.Finite ℂ (Module.End.eigenspace (complexify Ω T).toLinearMap (μ : ℂ)) :=
     Module.Finite.of_restrictScalars_finite ℝ ℂ _
   have hdim := e.finrank_eq
-  rw [finrank_real_of_complex, Module.finrank_prod] at hdim
+  have hreal :
+      Module.finrank ℝ (Module.End.eigenspace (complexify Ω T).toLinearMap (μ : ℂ)) =
+        2 * Module.finrank ℂ (Module.End.eigenspace (complexify Ω T).toLinearMap (μ : ℂ)) :=
+    finrank_real_of_complex _
+  simp only [Module.finrank_prod] at hdim
   omega
 
 /-- A nonzero eigenspace of an actual compact operator is finite dimensional. -/
@@ -7456,6 +7494,7 @@ def complexEnergyForm (Ω : Set ℂ) : ComplexH01 Ω →L⋆[ℂ] ComplexH01 Ω 
 @[simp] lemma reL2_complexInclusion (Ω : Set ℂ) (hΩ : MeasurableSet Ω)
     (u : ComplexH01 Ω) :
     reL2 Ω (complexInclusion Ω u) = inclusion Ω (realH01Part Ω hΩ u) := by
+  change reL2 Ω ((u : ComplexDomainJet Ω) 0) = _
   have h := congrArg (fun x : RealDomainJet Ω => x 0)
     (realDomainJet_realH01Part Ω hΩ u)
   simpa only [realDomainJet_apply, PiLp.toLp_apply, Matrix.cons_val_zero,
@@ -7464,6 +7503,7 @@ def complexEnergyForm (Ω : Set ℂ) : ComplexH01 Ω →L⋆[ℂ] ComplexH01 Ω 
 @[simp] lemma imL2_complexInclusion (Ω : Set ℂ) (hΩ : MeasurableSet Ω)
     (u : ComplexH01 Ω) :
     imL2 Ω (complexInclusion Ω u) = inclusion Ω (imagH01Part Ω hΩ u) := by
+  change imL2 Ω ((u : ComplexDomainJet Ω) 0) = _
   have h := congrArg (fun x : RealDomainJet Ω => x 0)
     (realDomainJet_imagH01Part Ω hΩ u)
   simpa only [realDomainJet_apply, PiLp.toLp_apply, Matrix.cons_val_zero,
@@ -7472,20 +7512,22 @@ def complexEnergyForm (Ω : Set ℂ) : ComplexH01 Ω →L⋆[ℂ] ComplexH01 Ω 
 @[simp] lemma reL2_complexGradient (Ω : Set ℂ) (hΩ : MeasurableSet Ω)
     (i : Fin 2) (u : ComplexH01 Ω) :
     reL2 Ω (complexGradient Ω i u) = domainGradient Ω i (realH01Part Ω hΩ u) := by
+  change reL2 Ω ((u : ComplexDomainJet Ω) i.succ) = _
   have h := congrArg (fun x : RealDomainJet Ω => x i.succ)
     (realDomainJet_realH01Part Ω hΩ u)
   fin_cases i <;>
-    simpa only [realDomainJet_apply, PiLp.toLp_apply, Matrix.cons_val_succ,
-      Matrix.cons_val_zero, realJetPart_apply] using h.symm
+    simpa [realDomainJet_apply, PiLp.toLp_apply, Matrix.cons_val_succ,
+      Matrix.cons_val_zero, realJetPart_apply, domainGradient] using h.symm
 
 @[simp] lemma imL2_complexGradient (Ω : Set ℂ) (hΩ : MeasurableSet Ω)
     (i : Fin 2) (u : ComplexH01 Ω) :
     imL2 Ω (complexGradient Ω i u) = domainGradient Ω i (imagH01Part Ω hΩ u) := by
+  change imL2 Ω ((u : ComplexDomainJet Ω) i.succ) = _
   have h := congrArg (fun x : RealDomainJet Ω => x i.succ)
     (realDomainJet_imagH01Part Ω hΩ u)
   fin_cases i <;>
-    simpa only [realDomainJet_apply, PiLp.toLp_apply, Matrix.cons_val_succ,
-      Matrix.cons_val_zero, imagJetPart_apply] using h.symm
+    simpa [realDomainJet_apply, PiLp.toLp_apply, Matrix.cons_val_succ,
+      Matrix.cons_val_zero, imagJetPart_apply, domainGradient] using h.symm
 
 set_option maxHeartbeats 800000 in
 lemma complexEnergyForm_parts (Ω : Set ℂ) (hΩ : MeasurableSet Ω)
@@ -7766,9 +7808,16 @@ lemma complexCoreFunction_fderiv (Ω : Set ℂ) (p : ComplexSmoothCorePair Ω) (
     ((p.2.property.1.differentiable (by simp) z).hasFDerivAt)
   have h := (hu.add (hv.const_mul Complex.I)).fderiv
   have hd := congrArg (fun L : ℂ →L[ℝ] ℂ => L d) h
-  simpa only [complexCoreFunction, ContinuousLinearMap.add_apply,
-    ContinuousLinearMap.smul_apply, ContinuousLinearMap.comp_apply,
-    Complex.ofRealCLM_apply, smul_eq_mul] using hd
+  unfold complexCoreFunction
+  have hfun :
+      (fun y : ℂ => ((p.1 : ℂ → ℝ) y : ℂ) + Complex.I * ((p.2 : ℂ → ℝ) y : ℂ)) =
+        (⇑Complex.ofRealCLM ∘ (p.1 : ℂ → ℝ) +
+          fun y => Complex.I * (⇑Complex.ofRealCLM ∘ (p.2 : ℂ → ℝ)) y) := by
+    funext y
+    rfl
+  rw [hfun]
+  simpa only [ContinuousLinearMap.add_apply, ContinuousLinearMap.smul_apply,
+    ContinuousLinearMap.comp_apply, Complex.ofRealCLM_apply, smul_eq_mul] using hd
 
 def complexSmoothCoreJet (Ω : Set ℂ) (p : ComplexSmoothCorePair Ω) : ComplexH01 Ω :=
   assembleComplexH01 Ω (coreToH01 Ω p.1) (coreToH01 Ω p.2)
@@ -7776,10 +7825,12 @@ def complexSmoothCoreJet (Ω : Set ℂ) (p : ComplexSmoothCorePair Ω) : Complex
 lemma continuous_assembleComplexH01 (Ω : Set ℂ) :
     Continuous (fun p : H01 Ω × H01 Ω => assembleComplexH01 Ω p.1 p.2) := by
   apply Continuous.subtype_mk
-  exact (((ofRealJet Ω).continuous.comp
+  have hc : Continuous (fun _ : H01 Ω × H01 Ω => (Complex.I : ℂ)) := continuous_const
+  convert (((ofRealJet Ω).continuous.comp
       ((realDomainJet Ω).continuous.comp continuous_fst)).add
-    (continuous_const.smul ((ofRealJet Ω).continuous.comp
-      ((realDomainJet Ω).continuous.comp continuous_snd))))
+    (hc.smul ((ofRealJet Ω).continuous.comp
+      ((realDomainJet Ω).continuous.comp continuous_snd)))) using 1 <;>
+    funext x <;> rfl
 
 set_option maxHeartbeats 800000 in
 theorem complexSmoothCoreJet_dense (Ω : Set ℂ) (hΩ : MeasurableSet Ω) :
@@ -8046,17 +8097,20 @@ omit [CompleteSpace H] in
 
 omit [CompleteSpace H] in
 theorem partial_ker_eq_bot (K : H →L[ℂ] H) (hKinj : Function.Injective K) :
-    (K.toLinearMap.toPMap ⊤).toFun.ker = ⊥ := by
-  rw [LinearMap.ker_eq_bot']
+    (K.toLinearMap.toPMap ⊤).ker = ⊥ := by
+  rw [LinearPMap.ker_eq_bot']
   intro f hf
   apply Subtype.ext
-  exact hKinj (by simpa using hf)
+  apply hKinj
+  change K (f : H) = 0 at hf
+  simpa using hf
 
 omit [CompleteSpace H] in
 @[simp] theorem apply_vector (K : H →L[ℂ] H) (hKinj : Function.Injective K)
     (f : H) : operator K (domainVector K f) = f := by
-  exact LinearPMap.inverse_apply_eq (partial_ker_eq_bot K hKinj)
-    (x := ⟨f, Submodule.mem_top⟩) rfl
+  change (K.toLinearMap.toPMap ⊤).inverse ⟨K f, _⟩ = (f : H)
+  simpa using (LinearPMap.inverse_apply_eq (f := K.toLinearMap.toPMap ⊤)
+    (partial_ker_eq_bot K hKinj) (x := ⟨f, Submodule.mem_top⟩) rfl)
 
 omit [CompleteSpace H] in
 theorem inverse_apply (K : H →L[ℂ] H) (hKinj : Function.Injective K)
@@ -8375,14 +8429,15 @@ theorem real_operator_eigenspace_eq_inverse (Ω : Set ℂ) (hopen : IsOpen Ω)
     dirichletResolventZero Ω hbdd x = lam⁻¹ • x
   constructor
   · rintro ⟨hx, hAx⟩
-    exact PolyaBridge.InverseOperator.inverse_eigen_of_operator_eigen
+    simpa only [dirichletOperator, PolyaBridge.CoerciveForm.associatedOperator] using
+      PolyaBridge.InverseOperator.inverse_eigen_of_operator_eigen
       (dirichletResolventZero Ω hbdd) (dirichletResolventZero_injective Ω hopen hbdd)
       lam hlam ⟨x, hx⟩ hAx
   · intro hKx
     have hdom := PolyaBridge.InverseOperator.eigenvector_mem_domain
       (dirichletResolventZero Ω hbdd) lam⁻¹ (inv_ne_zero hlam) x hKx
     refine ⟨hdom, ?_⟩
-    simpa only [inv_inv] using PolyaBridge.InverseOperator.eigenvector_apply
+    simpa only [inv_inv, dirichletOperator, dirichletResolventZero, PolyaBridge.CoerciveForm.associatedOperator] using PolyaBridge.InverseOperator.eigenvector_apply
       (dirichletResolventZero Ω hbdd) (dirichletResolventZero_injective Ω hopen hbdd)
       lam⁻¹ (inv_ne_zero hlam) x hKx
 
@@ -8404,7 +8459,8 @@ theorem complex_operator_eigenspace_eq_inverse (Ω : Set ℂ) (hopen : IsOpen Ω
     have hdom := PolyaBridge.ComplexInverseOperator.eigenvector_mem_domain
       (complexDirichletResolventZero Ω hbdd) lam⁻¹ (inv_ne_zero hlam) x hKx
     refine ⟨hdom, ?_⟩
-    simpa only [inv_inv] using PolyaBridge.ComplexInverseOperator.eigenvector_apply
+    simpa only [inv_inv, complexDirichletOperator,
+      PolyaBridge.CoerciveForm.associatedOperator] using PolyaBridge.ComplexInverseOperator.eigenvector_apply
       (complexDirichletResolventZero Ω hbdd)
       (complexDirichletResolventZero_injective Ω hopen hbdd) lam⁻¹ (inv_ne_zero hlam) x hKx
 
