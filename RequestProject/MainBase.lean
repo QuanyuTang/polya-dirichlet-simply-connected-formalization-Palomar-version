@@ -1378,6 +1378,18 @@ lemma norm_holW_sub_le (hG : DifferentiableOn ℂ G (ball 0 1)) {k₁ k₂ r s :
     (hε : ∀ θ ∈ Icc 0 (2 * π), ‖coefAng G k₂ s θ - coefAng G k₁ r θ‖ ≤ ε)
     {θ : ℝ} (hθ : θ ∈ Icc 0 (2 * π)) :
     ‖holW G k₂ s θ - holW G k₁ r θ‖ ≤ ε * θ := by
+  letI : ContinuousSMul ℝ (L2N →L[ℂ] L2N) := ⟨by
+    have hsmul : (fun p : ℝ × (L2N →L[ℂ] L2N) => p.1 • p.2) =
+        fun p => ((p.1 : ℂ) • p.2) := by
+      funext p
+      exact RCLike.real_smul_eq_coe_smul (K := ℂ) p.1 p.2
+    rw [hsmul]
+    fun_prop⟩
+  letI : StarModule ℝ (L2N →L[ℂ] L2N) :=
+    ⟨fun a T => by
+      change star ((a : ℂ) • T) = (a : ℂ) • star T
+      rw [star_smul]
+      simp⟩
   obtain ⟨hr0, hrd⟩ := holW_spec k₁ isOpen_ball hG (circ_mem_ball hr)
   obtain ⟨hs0, hsd⟩ := holW_spec k₂ isOpen_ball hG (circ_mem_ball hs)
   have hru : ∀ t ∈ Icc 0 (2 * π), holW G k₁ r t ∈ unitary (L2N →L[ℂ] L2N) := fun t ht =>
@@ -1385,20 +1397,18 @@ lemma norm_holW_sub_le (hG : DifferentiableOn ℂ G (ball 0 1)) {k₁ k₂ r s :
   have hsu : ∀ t ∈ Icc 0 (2 * π), holW G k₂ s t ∈ unitary (L2N →L[ℂ] L2N) := fun t ht =>
     holW_mem_unitary k₂ isOpen_ball hG (circ_mem_ball hs) ht
   set g : ℝ → L2N →L[ℂ] L2N := fun t => star (holW G k₁ r t) * holW G k₂ s t with hg
-  letI : StarModule ℝ (L2N →L[ℂ] L2N) :=
-    ⟨fun a T => by
-      change star ((a : ℂ) • T) = (a : ℂ) • star T
-      rw [star_smul]
-      simp⟩
   have hgd : ∀ t ∈ Icc 0 (2 * π), HasDerivWithinAt g
       (star (holW G k₁ r t) * (coefAng G k₂ s t - coefAng G k₁ r t) * holW G k₂ s t)
       (Icc 0 (2 * π)) t := by
     intro t ht
     have hd := ((hrd t ht).star).mul (hsd t ht)
     convert hd using 1
+    · apply Module.ext' _ _
+      intro r x
+      exact RCLike.real_smul_eq_coe_smul (K := ℂ) r x
     rw [star_mul, star_coefAng]
-    simp only [mul_sub, sub_mul, mul_neg, neg_mul, mul_assoc]
-    noncomm_ring
+    simp only [mul_sub, sub_mul, mul_neg, neg_mul, mul_assoc, sub_eq_add_neg, add_comm]
+    simp only [add_mul, mul_add, neg_mul, mul_assoc]
   have hbound : ∀ t ∈ Ico 0 (2 * π),
       ‖star (holW G k₁ r t) * (coefAng G k₂ s t - coefAng G k₁ r t) * holW G k₂ s t‖ ≤ ε := by
     intro t ht
@@ -1857,8 +1867,9 @@ lemma exists_testFunctions_of_directed {ι : Type*} [Nonempty ι] {Ω : Set ℂ}
     · intro u hu
       have hu' : (⟨u, hu⟩ : V) ∈ Submodule.span ℝ (Set.range b) := by rw [this]; trivial
       have := Submodule.apply_mem_span_image_of_mem_span V.subtype hu'
-      simpa [← Set.range_comp] using this
-    · rw [Submodule.span_le]
+      rw [← Set.range_comp] at this
+      simpa [Function.comp_def] using this
+    · apply Submodule.span_le.2
       rintro _ ⟨k, rfl⟩
       exact (b k).2
   rw [hspan, Submodule.span_le]
@@ -1913,11 +1924,13 @@ lemma integral_sq_eq_neg_integral_re_mul (u : ℂ → ℝ) (hu : ContDiff ℝ (�
     simp
   have h2 : ∀ z, fderiv ℝ (fun z => (u z) ^ 2) z 1 = 2 * u z * fderiv ℝ u z 1 := by
     intro z
+    change (fderiv ℝ (u ^ 2) z) 1 = _
     rw [fderiv_pow 2 (hd z)]
     simp
   have key := integral_mul_fderiv_eq_neg_fderiv_mul_of_integrable (μ := volume)
     (f := fun z : ℂ => z.re) (g := fun z => (u z) ^ 2) (v := (1 : ℂ)) ?_ ?_ ?_
-    Complex.reCLM.differentiable (hd.pow 2)
+    (fun _ _ => Complex.reCLM.differentiableAt)
+    (fun _ _ => (hd.pow 2).differentiableAt)
   · simp only [h1, h2, one_mul] at key
     rw [key, neg_neg]
   · simp only [h1, one_mul]
@@ -1952,11 +1965,13 @@ lemma integral_sq_eq_neg_integral_re_sub_mul (a : ℝ) (u : ℂ → ℝ) (hu : C
     simp
   have h2 : ∀ z, fderiv ℝ (fun z => (u z) ^ 2) z 1 = 2 * u z * fderiv ℝ u z 1 := by
     intro z
+    change (fderiv ℝ (u ^ 2) z) 1 = _
     rw [fderiv_pow 2 (hd z)]
     simp
   have key := integral_mul_fderiv_eq_neg_fderiv_mul_of_integrable (μ := volume)
     (f := fun z : ℂ => z.re - a) (g := fun z => (u z) ^ 2) (v := (1 : ℂ)) ?_ ?_ ?_
-    hdre (hd.pow 2)
+    (fun _ _ => hdre.differentiableAt)
+    (fun _ _ => (hd.pow 2).differentiableAt)
   · simp only [h1, h2, one_mul] at key
     rw [key, neg_neg]
   · simp only [h1, one_mul]
@@ -1966,6 +1981,7 @@ lemma integral_sq_eq_neg_integral_re_sub_mul (a : ℝ) (u : ℂ → ℝ) (hu : C
   · refine Continuous.integrable_of_hasCompactSupport (by fun_prop) ?_
     exact hsq.mul_left
 
+set_option maxHeartbeats 1000000 in
 /-- **Poincaré inequality**: for a bounded set `Ω` there is `C > 0`
 with `∫ |u|² ≤ C ∫ |∇u|²` for all smooth compactly supported `u` with support in `Ω`. -/
 theorem poincare_inequality (Ω : Set ℂ) (hb : Bornology.IsBounded Ω) :
@@ -1994,7 +2010,8 @@ theorem poincare_inequality (Ω : Set ℂ) (hb : Bornology.IsBounded Ω) :
     (hu.continuous.pow 2).integrable_of_hasCompactSupport hsq
   have hintD : Integrable (fun z => ‖fderiv ℝ u z‖ ^ 2) volume := by
     refine (hfc.norm.pow 2).integrable_of_hasCompactSupport ?_
-    exact hcf.norm.comp_left (g := fun x : ℝ => x ^ 2) (by simp)
+    set_option maxHeartbeats 1000000 in
+      exact hcf.norm.comp_left (g := fun x : ℝ => x ^ 2) (by simp)
   -- pointwise AM-GM bound
   have hpt : ∀ z, -(z.re * (2 * u z * fderiv ℝ u z 1)) ≤
       (u z) ^ 2 / 2 + 2 * R ^ 2 * ‖fderiv ℝ u z‖ ^ 2 := by
@@ -2053,6 +2070,7 @@ theorem poincare_inequality (Ω : Set ℂ) (hb : Bornology.IsBounded Ω) :
   rw [← ENNReal.ofReal_mul (by positivity)]
   exact ENNReal.ofReal_le_ofReal hAD'
 
+set_option maxHeartbeats 1000000 in
 /-- Poincaré inequality with an explicit constant: if `Ω ⊆ closedBall c ρ`, then
 `∫ |u|² ≤ 4ρ² ∫ |∇u|²` for all test functions `u` on `Ω`. -/
 theorem poincare_inequality_closedBall (Ω : Set ℂ) (c : ℂ) {ρ : ℝ} (hΩ : Ω ⊆ closedBall c ρ) :
@@ -2076,7 +2094,8 @@ theorem poincare_inequality_closedBall (Ω : Set ℂ) (c : ℂ) {ρ : ℝ} (hΩ 
     (hu.continuous.pow 2).integrable_of_hasCompactSupport hsq
   have hintD : Integrable (fun z => ‖fderiv ℝ u z‖ ^ 2) volume := by
     refine (hfc.norm.pow 2).integrable_of_hasCompactSupport ?_
-    exact hcf.norm.comp_left (g := fun x : ℝ => x ^ 2) (by simp)
+    set_option maxHeartbeats 1000000 in
+      exact hcf.norm.comp_left (g := fun x : ℝ => x ^ 2) (by simp)
   have hpt : ∀ z, -((z.re - c.re) * (2 * u z * fderiv ℝ u z 1)) ≤
       (u z) ^ 2 / 2 + 2 * ρ ^ 2 * ‖fderiv ℝ u z‖ ^ 2 := by
     intro z
@@ -2223,6 +2242,8 @@ lemma hasDerivAt_mob {a z : ℂ} (ha : ‖a‖ < 1) (hz : ‖z‖ < 1) :
   have h2 : HasDerivAt (fun w => 1 - (starRingEnd ℂ) a * w) (-(starRingEnd ℂ) a) z := by
     simpa using ((hasDerivAt_id z).const_mul ((starRingEnd ℂ) a)).const_sub 1
   have := h1.div h2 hd
+  change HasDerivAt ((fun w => w - a) / fun w => 1 - (starRingEnd ℂ) a * w)
+    ((1 - (starRingEnd ℂ) a * a) / (1 - (starRingEnd ℂ) a * z) ^ 2) z
   convert this using 1
   field_simp
   ring
@@ -2301,8 +2322,8 @@ theorem exists_sqrt_of_simplyConnected {Ω : Set ℂ} (hΩ : IsOpen Ω) [SimplyC
     simp only [hg_def, hz, dite_true]
     exact (G ⟨z, hz⟩).2
   have hcont : ContinuousOn g Ω := by
-    rw [continuousOn_iff_continuous_restrict]
-    have : Ω.restrict g = fun z : Ω => ((G z : {x : ℂ // x ≠ 0}) : ℂ) := by
+    rw [continuousOn_iff_continuous_domRestrict]
+    have : Ω.domRestrict g = fun z : Ω => ((G z : {x : ℂ // x ≠ 0}) : ℂ) := by
       funext z
       simp [hg_def, z.2]
     rw [this]
@@ -2680,6 +2701,8 @@ lemma hasDerivAt_psi {c : ℂ} (hc : ‖c‖ < 1) :
   have h3 := hasDerivAt_mob hw (z := mob (-c) 0 ^ 2) (by simpa using hc2)
   have := h3.comp (0 : ℂ) (h2.comp (0 : ℂ) h1)
   convert this using 1
+  · funext ζ
+    rfl
   simp only [mob_zero, neg_neg, map_neg, map_pow, mul_zero, sub_zero]
   have hden : 1 + (starRingEnd ℂ) c * c ≠ 0 := by
     rw [conj_mul']
@@ -2702,9 +2725,8 @@ lemma hasDerivAt_psi {c : ℂ} (hc : ‖c‖ < 1) :
   have hden' : 1 + c * d ≠ 0 := by rwa [mul_comm]
   have hden3' : 1 - c ^ 2 * d ^ 2 ≠ 0 := by rwa [mul_comm]
   have hfac : 1 - c ^ 2 * d ^ 2 = (1 - d * c) * (1 + c * d) := by ring
-  field_simp
-  rw [hfac]
-  field_simp
+  field_simp [hden, hden3]
+  ring
 
 /-- `|2c / (1 + |c|²)| < 1` for `|c| < 1`. -/
 lemma norm_psi_deriv_lt_one {c : ℂ} (hc : ‖c‖ < 1) :
@@ -3253,7 +3275,11 @@ theorem exists_unitary_path {F : Type*} [NormedAddCommGroup F] [InnerProductSpac
     ∃ V : ℝ → F →L[ℂ] F, V 0 = 1 ∧ (∀ t ∈ Icc 0 b, V t ∈ unitary (F →L[ℂ] F)) ∧
       ∀ t ∈ Icc 0 b, HasDerivWithinAt V (I • (V t * A t)) (Icc 0 b) t := by
   set C : ℝ → F →L[ℂ] F := fun t => (-I) • A t with hCdef
-  have hCc : ContinuousOn C (Icc 0 b) := hAc.const_smul _
+  have hCc : ContinuousOn C (Icc 0 b) := by
+    rw [hCdef]
+    convert (hAc.const_smul (Complex.I)).neg using 1
+    funext t
+    simp
   obtain ⟨W, hW0, hW⟩ := exists_linear_ode_Icc hb hCc
   have hWd : ∀ t ∈ Icc 0 b, HasDerivWithinAt W (C t * W t) (Icc 0 b) t :=
     fun t ht => (hW t ht).hasDerivWithinAt
@@ -3353,6 +3379,7 @@ theorem exists_finite_approx_path {U L : ℝ → E →L[ℂ] E} {b : ℝ} (hb : 
         (Icc 0 b) t :=
       HasDerivWithinAt.complexCLM_comp (hVd t ht) Φ
     have h2 := (h1.add_const (1 - P)).sub (hUd t ht)
+    change HasDerivWithinAt ((fun s => Φ (V s) + (1 - P)) - U) _ (Icc 0 b) t
     convert h2 using 1
     rw [map_smul, hkey, ← smul_sub]
     congr 1
@@ -4632,6 +4659,8 @@ lemma hasDerivWithinAt_inverse_one_sub {W : ℝ → E →L[ℂ] E} {W' : E →L[
       (↑u⁻¹ : E →L[ℂ] E) ↑u⁻¹) (1 - W t) := hu ▸ hasFDerivAt_ringInverse (𝕜 := ℝ) u
   have h2 := h3.comp_hasDerivWithinAt t h1
   convert h2 using 1
+  · funext τ
+    rfl
   rw [← hu, Ring.inverse_unit]
   simp [ContinuousLinearMap.mulLeftRight_apply]
 
@@ -4799,9 +4828,12 @@ lemma continuous_cayley_comp {W : ℝ → F →L[ℂ] F} (hW : Continuous W)
     obtain ⟨u, hu⟩ := hu t
     exact ContinuousAt.comp (f := fun t => 1 - W t)
       (show ContinuousAt Ring.inverse (1 - W t) from hu ▸ NormedRing.inverse_continuousAt u)
-      (continuous_const.sub hW).continuousAt
+      (show ContinuousAt (fun t : ℝ => (1 : F →L[ℂ] F) - W t) t from
+        (continuous_const.sub hW).continuousAt)
   unfold cayley
-  exact ((continuous_const.add hW).mul hinv).const_smul _
+  exact Continuous.const_smul
+    (((continuous_const : Continuous (fun _ : ℝ => (1 : F →L[ℂ] F))).add hW).mul hinv)
+    (Complex.I : ℂ)
 
 /-- **Eigenphases on a window.** Let `V` be a unitary path on `[s₁, s₂]` with right derivative
 `V' = i V A`, `A(t)` self-adjoint, such that `e^{iβ}` is never an eigenvalue of `V(t)`. Then there
@@ -4891,6 +4923,8 @@ theorem phase_window {n : ℕ} (hn : finrank ℂ F = n) {V A : ℝ → F →L[�
     have harc := (((Real.hasDerivAt_arctan (ν k t)).comp_hasDerivWithinAt t hνd).const_mul
       2).const_add (β - Real.pi)
     convert harc using 1
+    · funext x
+      rfl
     have := re_inner_cayley_deriv (hWi t) (A t) (hu1 k)
     rw [← this]
     simp only [ν]
@@ -5004,7 +5038,6 @@ lemma IsPhaseLift.extend {V A : ℝ → F →L[ℂ] F} {s s₂ : ℝ} (hs0 : 0 �
   have hexpd : ∀ k, exp ((d k : ℝ) * I) = 1 := by
     intro k
     have h := hσ k
-    simp only at h
     have : ((d k : ℝ) : ℂ) * I = lam k s * I - φ (σ k) s * I := by
       simp only [d]; push_cast; ring
     rw [this, Complex.exp_sub, ← h, div_self (Complex.exp_ne_zero _)]
@@ -5062,7 +5095,9 @@ theorem exists_phaseLift (hn : finrank ℂ F = n) {V A : ℝ → F →L[ℂ] F} 
     hVc.comp_continuous (continuous_subtype_val.comp continuous_projIcc) hp
   obtain ⟨δ, hδ, hcov⟩ := lebesgue_number_lemma_of_metric (isCompact_Icc (a := 0) (b := b))
     (c := fun β : ℝ => {t : ℝ | IsUnit (1 - exp (-(β * I)) • V (p t))})
-    (fun β => Units.isOpen.preimage (continuous_const.sub (hVpc.const_smul _)))
+     (fun β => Units.isOpen.preimage
+       ((continuous_const : Continuous (fun _ : ℝ => (1 : F →L[ℂ] F))).sub
+         (hVpc.const_smul (exp (-(β * I)) : ℂ))))
     (fun t ht => by
       obtain ⟨β, hβ⟩ := exists_level_unit (V t)
       exact mem_iUnion.2 ⟨β, by simp only [mem_setOf_eq, hpeq t ht]; exact hβ⟩)
@@ -5844,7 +5879,7 @@ theorem continuousOn_generator (hU : IsAdmissiblePath b U) :
   have h1 := hU.traceNorm_continuous t ht
   have h2 : Tendsto (fun s => ENNReal.ofReal ‖generator U b s - generator U b t‖)
       (𝓝[Icc 0 b] t) (𝓝 0) :=
-    tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h1 (fun _ => zero_le _)
+    tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h1 (fun _ => bot_le)
       (fun s => ofReal_norm_le_traceNorm _)
   have h3 := (ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp h2
   simpa [Function.comp_def, ENNReal.toReal_ofReal (norm_nonneg _)] using h3
@@ -7102,10 +7137,12 @@ lemma one_le_crossingMult {U : ℝ → E →L[ℂ] E} {α t : ℝ} {x : E} (hx :
   have hxK : x ∈ K := by
     simp [K, hUx]
   have h1 : (1 : Cardinal) ≤ Module.rank ℂ K := by
-    have := Submodule.rank_mono (R := ℂ) ((Submodule.span_singleton_le_iff_mem x K).2 hxK)
-    rwa [← Module.finrank_eq_rank, finrank_span_singleton hx, Nat.cast_one] at this
+    have hKrank := Submodule.rank_mono (R := ℂ)
+      ((Submodule.span_singleton_le_iff_mem x K).2 hxK)
+    rw [← Module.finrank_eq_rank, finrank_span_singleton hx, Nat.cast_one] at hKrank
+    simpa [K] using hKrank
   have := Cardinal.toENat.monotone' h1
-  simpa using this
+  simpa [K] using this
 
 /-- An admissible path has only finitely many crossing times of a level `0 < α < 2π`. -/
 lemma finite_crossing_times {b : ℝ} {U : ℝ → E →L[ℂ] E} (hU : IsAdmissiblePath b U) {α : ℝ}
@@ -8088,7 +8125,8 @@ theorem dirichletEigenvalue_lt_top {Ω : Set ℂ} (hΩ : IsOpen Ω) (hne : Ω.No
     have h2 : MemLp (fderiv ℝ f) 2 volume :=
       hfdc.memLp_of_hasCompactSupport (HasCompactSupport.fderiv (𝕜 := ℝ) hfc)
     have := h2.eLpNorm_lt_top
-    rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by norm_num) (by norm_num)] at this
+    rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by norm_num) (by norm_num)
+      h2.aestronglyMeasurable] at this
     simpa [hE, dirichletEnergy] using this.ne
   have hN0 : N ≠ 0 := (l2NormSq_pos_of_ne_zero hfs.continuous (fun h => by
     have := congrFun h 0; rw [hf0] at this; simp at this)).ne'
@@ -8122,7 +8160,10 @@ theorem dirichletEigenvalue_lt_top {Ω : Set ℂ} (hΩ : IsOpen Ω) (hne : Ω.No
       have h1 : HasFDerivAt (fun z => f (z - c i)) (fderiv ℝ f (z - c i)) z := by
         have := ((hfs.differentiable (by simp)) (z - c i)).hasFDerivAt.comp z
           ((hasFDerivAt_id z).sub_const (c i))
-        simpa using this
+        convert this using 1
+        · funext x
+          rfl
+        · simp
       exact h1.const_mul (a i)
     have hen : dirichletEnergy (T a) = S * E := by
       calc dirichletEnergy (T a) = ∫⁻ z, ∑ i, ‖a i‖ₑ ^ 2 * ‖fderiv ℝ f (z - c i)‖ₑ ^ 2 := by
@@ -8183,7 +8224,8 @@ theorem dirichletEigenvalue_pos (Ω : Set ℂ) (hb : Bornology.IsBounded Ω) {j 
       unfold l2NormSq
       have h2 : MemLp u 2 volume := htest.1.continuous.memLp_of_hasCompactSupport htest.2.1
       have := h2.eLpNorm_lt_top
-      rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by norm_num) (by norm_num)] at this
+      rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by norm_num) (by norm_num)
+        h2.aestronglyMeasurable] at this
       simpa using this.ne
     unfold rayleigh
     rw [ENNReal.le_div_iff_mul_le (Or.inl hl2pos.ne') (Or.inl hl2fin)]
@@ -8290,7 +8332,7 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteS
 /-- Cauchy–Schwarz for a positive operator: `‖A x‖² ≤ ‖A‖ Re ⟪x, A x⟫`. -/
 lemma norm_apply_sq_le_of_isPositive {A : E →L[ℂ] E} (hA : A.IsPositive) (x : E) :
     ‖A x‖ ^ 2 ≤ ‖A‖ * RCLike.re ⟪x, A x⟫_ℂ := by
-  have h0 : 0 ≤ A := (ContinuousLinearMap.nonneg_iff_isPositive A).2 hA
+  have h0 : 0 ≤ A := (ContinuousLinearMap.nonneg_iff_isPositive).2 hA
   set S := CFC.sqrt A
   have hS : S * S = A := CFC.sqrt_mul_sqrt_self A h0
   have hSsa : IsSelfAdjoint S := (CFC.sqrt_nonneg A).isSelfAdjoint
@@ -8518,8 +8560,8 @@ lemma isCompactOperator_arcForm {U : E →L[ℂ] E} (hU : U ∈ unitary (E →L[
   have hS : IsCompactOperator ((star U - 1 : E →L[ℂ] E) : E → E) := by
     have h : (star U - 1 : E →L[ℂ] E) = -(star U * (U - 1)) := by
       rw [mul_sub, Unitary.star_mul_self_of_mem hU, mul_one]; abel
-    rw [h, ContinuousLinearMap.coe_neg', ContinuousLinearMap.coe_mul]
-    exact (hC.clm_comp (star U)).neg
+    rw [h]
+    simpa [ContinuousLinearMap.coe_comp] using (hC.clm_comp (star U)).neg
   have h1 : ((2 : ℂ) • 1 - U - star U : E →L[ℂ] E) = -(U - 1) - (star U - 1) := by
     rw [two_smul]; abel
   have h2 : (U - star U : E →L[ℂ] E) = (U - 1) - (star U - 1) := by abel
@@ -8650,8 +8692,8 @@ theorem exists_arc_eigenvectors {U : E →L[ℂ] E} (hU : U ∈ unitary (E →L[
       simp only [ContinuousLinearMap.mul_apply, hPval, map_sub, hprojU]
     set G' := P * G * P with hG'
     have hG'c : IsCompactOperator (G' : E → E) := by
-      rw [hG', ContinuousLinearMap.coe_mul, ContinuousLinearMap.coe_mul]
-      exact (hGc.clm_comp P).comp_clm P
+      rw [hG', hG]
+      simpa [ContinuousLinearMap.coe_comp, Function.comp_def] using (hGc.comp_clm P).clm_comp P
     have hG's : IsSelfAdjoint G' := by
       rw [hG', IsSelfAdjoint, star_mul, star_mul, hPsa.star_eq, hGs.star_eq, mul_assoc]
     have hG'comm : U * G' = G' * U := by
@@ -8664,8 +8706,9 @@ theorem exists_arc_eigenvectors {U : E →L[ℂ] E} (hU : U ∈ unitary (E →L[
         hPsa.star_eq, hPfix z hz]
     -- a nonzero vector of `Y ∩ Qᗮ`
     have hQrank : Module.finrank ℂ Q ≤ p := by
-      have := finrank_range_le_card (R := ℂ) (b := u)
-      simpa using this
+      rw [hQ]
+      have hli := hon.linearIndependent
+      simpa using (finrank_span_eq_card hli).le
     obtain ⟨y₀, hy₀Y, hy₀Q, hy₀0⟩ : ∃ y ∈ Y, y ∈ Qᗮ ∧ y ≠ 0 := by
       by_contra hcon
       push_neg at hcon
@@ -8792,11 +8835,13 @@ abbrev CircFun := C(AddCircle (2 * π), ℂ)
 
 /-- Evaluation of the `j`-th coordinate of `ℓ²(ℤ)`. -/
 def lpEvalZ (j : ℤ) : lp (fun _ : ℤ => ℂ) 2 →L[ℂ] ℂ :=
-  LinearMap.mkContinuous
+    LinearMap.mkContinuous
     { toFun := fun x => x j
       map_add' := fun _ _ => rfl
       map_smul' := fun _ _ => rfl } 1
-    (fun x => by simpa using lp.norm_apply_le_norm (by norm_num) x j)
+    (fun x => by
+      change ‖x j‖ ≤ 1 * ‖x‖
+      simpa using lp.norm_apply_le_norm (by norm_num) x j)
 
 lemma memℓp_shiftZ (x : lp (fun _ : ℤ => ℂ) 2) :
     Memℓp (fun n : ℕ => x ((n : ℤ) + 1)) 2 := by
@@ -8838,11 +8883,20 @@ def circPos : CircFun →L[ℂ] L2N :=
     ContinuousMap.toLp (E := ℂ) 2 (@AddCircle.haarAddCircle (2 * π) _) ℂ
 
 lemma circCoeff_apply (j : ℤ) (g : CircFun) : circCoeff j g = fourierCoeff g j := by
-  simp only [circCoeff, ContinuousLinearMap.coe_comp', Function.comp_apply]
-  show (fourierBasis (T := 2 * π)).repr _ j = _
+  simp only [circCoeff, ContinuousLinearMap.coe_comp', Function.comp_apply, lpEvalZ,
+    LinearMap.mkContinuous_apply, LinearMap.coe_mk, AddHom.coe_mk]
+  change (fourierBasis (T := 2 * π)).repr
+      (ContinuousMap.toLp (E := ℂ) 2 (@AddCircle.haarAddCircle (2 * π) _) ℂ g) j = _
   rw [fourierBasis_repr, fourierCoeff_toLp]
 
-lemma circPos_apply (g : CircFun) (n : ℕ) : circPos g n = circCoeff ((n : ℤ) + 1) g := rfl
+lemma circPos_apply (g : CircFun) (n : ℕ) : circPos g n = circCoeff ((n : ℤ) + 1) g := by
+  rw [circCoeff_apply]
+  simp only [circPos, ContinuousLinearMap.coe_comp', Function.comp_apply, shiftZ,
+    LinearMap.mkContinuous_apply, LinearMap.coe_mk, AddHom.coe_mk]
+  change (fourierBasis (T := 2 * π)).repr
+      (ContinuousMap.toLp (E := ℂ) 2 (@AddCircle.haarAddCircle (2 * π) _) ℂ g)
+      ((n : ℤ) + 1) = _
+  rw [fourierBasis_repr, fourierCoeff_toLp]
 
 lemma circCoeff_mul_fourier (j m : ℤ) (g : CircFun) :
     circCoeff j (g * fourier m) = circCoeff (j - m) g := by
@@ -8868,7 +8922,9 @@ lemma circPos_mul_fourier_one (g : CircFun) :
   ext n
   rw [circPos_apply, circCoeff_mul_fourier]
   cases n with
-  | zero => simp [e0_apply, show shift (circPos g) 0 = 0 from rfl]
+  | zero =>
+      change circCoeff 0 g = 0 + circCoeff 0 g * 1
+      simp
   | succ n =>
     simp only [lp.coeFn_add, Pi.add_apply, 
       show ∀ (y : L2N) (n : ℕ), shift y (n + 1) = y n from fun _ _ => rfl, lp.coeFn_smul, Pi.smul_apply,
@@ -8902,9 +8958,12 @@ lemma hasFDerivAt_herglotzDir (k : ℝ) (a : CircFun) (z : ℂ) :
   have h1 := hasFDerivAt_exp (𝕂 := ℝ) (𝔸 := CircFun) (x := herglotzPhase k z)
   have h2 := h1.comp z (herglotzPhase k).hasFDerivAt
   have h3 := (ContinuousLinearMap.mul ℝ CircFun a).hasFDerivAt.comp z h2
-  convert h3 using 1
-  ext w
-  simp [herglotzDir, mul_assoc]
+  convert h3 using 1 <;>
+    first
+    | (apply ContinuousLinearMap.ext; intro w; ext φ;
+       simp [herglotzDir, mul_apply_eq_comp, smul_apply, smul_eq_mul, mul_assoc])
+    | (funext w; ext φ;
+       simp [herglotzDir, mul_apply_eq_comp, smul_apply, smul_eq_mul, mul_assoc])
 
 lemma herglotzDir_mul_phase (k : ℝ) (a : CircFun) (z w : ℂ) :
     herglotzDir k a z * herglotzPhase k w = (-(I * k / 2)) •
@@ -8953,11 +9012,12 @@ lemma hasDerivAt_herglotzVec_comp (k : ℝ) (a : CircFun) {γ : ℝ → ℂ} {γ
     (circPos.restrictScalars ℝ).hasFDerivAt.comp _ (hasFDerivAt_herglotzDir k a (γ θ))
   have h2 := h1.comp_hasDerivAt θ hγ
   convert h2 using 1
-  simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.mul_apply',
-    ContinuousLinearMap.coe_restrictScalars']
-  rw [herglotzDir_mul_phase, map_smul, map_add, map_smul, map_smul, circPos_mul_fourier_neg_one,
-    circPos_mul_fourier_one]
-  rfl
+  · rfl
+  · simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.mul_apply',
+      ContinuousLinearMap.coe_restrictScalars']
+    rw [herglotzDir_mul_phase, map_smul, map_add, map_smul, map_smul, circPos_mul_fourier_neg_one,
+      circPos_mul_fourier_one]
+    rfl
 
 lemma herglotzVec_sum {m : ℕ} (k : ℝ) (a : Fin m → CircFun) (c : Fin m → ℂ) (z : ℂ) :
     herglotzVec k (∑ i, c i • a i) z = ∑ i, c i • herglotzVec k (a i) z := by
@@ -9040,8 +9100,10 @@ lemma hasDerivAt_circleCurve {U : Set ℂ} (hU : IsOpen U) (hF : DifferentiableO
     simpa using this.const_mul (r : ℂ)
   have h2 := ((hF.differentiableAt (hU.mem_nhds hr)).hasDerivAt).comp θ h1
   convert h2 using 1
-  simp only [dAng]
-  ring
+  · funext t
+    simp only [Function.comp_apply]
+  · unfold dAng
+    ring
 
 /-- `C_θ = -(ik/2)(γ' S* + conj γ' S)`. -/
 lemma coefAng_eq_shift (r θ : ℝ) :
@@ -9103,25 +9165,36 @@ theorem herglotz_holonomy_estimate {U : Set ℂ} (hU : IsOpen U) (hF : Different
     simp only [hfrc]
     exact (((continuous_const.mul (Complex.continuous_conj.comp hdc)).mul hhc).smul
       continuous_const)
+  letI : StarModule ℝ (L2N →L[ℂ] L2N) :=
+    ⟨fun a T => by
+      change star ((a : ℂ) • T) = (a : ℂ) • star T
+      rw [star_smul]
+      simp⟩
   set G : ℝ → L2N := fun θ => star (W θ) (f θ) with hGdef
   set G' : ℝ → L2N := fun θ => star (W θ) (frc θ) with hG'def
   have hstarc : ContinuousOn (fun θ => star (W θ)) (Icc 0 (2 * π)) :=
-    continuous_star.comp_continuousOn hWc
+    by
+      simpa only [starL'_apply] using
+        (starL' ℝ (A := L2N →L[ℂ] L2N)).continuous.comp_continuousOn' hWc
   have hGc : ContinuousOn G (Icc 0 (2 * π)) := hstarc.clm_apply hfc.continuousOn
   have hG'c : ContinuousOn G' (Icc 0 (2 * π)) := hstarc.clm_apply hfrcc.continuousOn
   have hGd : ∀ θ ∈ Ioo 0 (2 * π), HasDerivAt G (G' θ) θ := by
     intro θ hθ
     have hWθ : HasDerivAt W (coefAng F k r θ * W θ) θ :=
       (hWd θ (Ioo_subset_Icc_self hθ)).hasDerivAt (Icc_mem_nhds hθ.1 hθ.2)
-    have hS : HasDerivAt (fun t => star (W t)) (star (coefAng F k r θ * W θ)) θ := hWθ.star
+    have hS : HasDerivAt (fun t => star (W t)) (star (coefAng F k r θ * W θ)) θ :=
+      (starL' ℝ (A := L2N →L[ℂ] L2N)).hasFDerivAt.comp_hasDerivAt θ hWθ
     have hS' : HasDerivAt (fun t => (star (W t)).restrictScalars ℝ)
         ((star (coefAng F k r θ * W θ)).restrictScalars ℝ) θ :=
       (ContinuousLinearMap.restrictScalarsL ℂ L2N L2N ℝ ℝ).hasFDerivAt.comp_hasDerivAt θ hS
     have := hS'.clm_apply (hfd θ)
     convert this using 1
-    simp only [hG'def, ContinuousLinearMap.coe_restrictScalars', star_mul, star_coefAng,
-      ContinuousLinearMap.mul_apply, map_add, ContinuousLinearMap.neg_apply, map_neg]
-    abel
+    · simpa only [hGdef, ContinuousLinearMap.coe_restrictScalars']
+    · rw [hG'def]
+      change star (W θ) (frc θ) = _
+      simp only [ContinuousLinearMap.coe_restrictScalars', star_mul, star_coefAng,
+        mul_apply_eq_comp, map_add, map_neg, neg_one_smul, neg_apply]
+      abel
   obtain ⟨hA, hB⟩ := duhamel_inner_estimate (b := 2 * π) (by positivity) hGc hG'c hGd
   -- identifications
   have hV : holV F k r = W (2 * π) := rfl
