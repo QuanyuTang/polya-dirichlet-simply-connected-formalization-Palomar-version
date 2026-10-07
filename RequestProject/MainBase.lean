@@ -119,7 +119,9 @@ theorem adjoint_shift : ContinuousLinearMap.adjoint shift = shiftAdj := by
   rw [ContinuousLinearMap.eq_adjoint_iff]
   intro x y
   rw [lp.inner_eq_tsum, lp.inner_eq_tsum]
-  rw [(lp.summable_inner x (shift y)).tsum_eq_zero_add]
+  have hsum : Summable (fun n : ℕ => ⟪x n, (shift y) n⟫_ℂ) :=
+    lp.summable_inner x (shift y)
+  rw [hsum.tsum_eq_zero_add]
   simp [show ∀ y : L2N, shift y 0 = 0 from fun _ => rfl,
     show ∀ (y : L2N) (n : ℕ), shift y (n + 1) = y n from fun _ _ => rfl]
 
@@ -161,18 +163,34 @@ lemma star_shiftAdj : star shiftAdj = shift := by rw [← star_shift, star_star]
 
 /-- `X` is skew-adjoint. -/
 theorem star_opX (k : ℝ) : star (opX k) = -opX k := by
-  simp only [opX, star_smul, star_add, star_shift, star_shiftAdj]
-  rw [← neg_smul]
+  rw [opX, star_smul]
+  have hsum : star (shift + shiftAdj) = shift + shiftAdj := by
+    rw [ContinuousLinearMap.star_eq_adjoint, map_add,
+      ← ContinuousLinearMap.star_eq_adjoint, ← ContinuousLinearMap.star_eq_adjoint,
+      star_shift, star_shiftAdj]
+    abel
+  rw [hsum]
+  rw [show -((-(Complex.I * k / 2)) • (shift + shiftAdj)) =
+      (-(-(Complex.I * k / 2))) • (shift + shiftAdj) from (neg_smul _ _).symm]
   congr 1
-  · simp [Complex.conj_ofReal]; ring
-  · abel
+  · simp [Complex.star_def, Complex.conj_ofReal]
+    ring
 
 /-- `Y` is skew-adjoint. -/
 theorem star_opY (k : ℝ) : star (opY k) = -opY k := by
-  simp only [opY, star_smul, star_sub, star_shift, star_shiftAdj]
-  rw [← smul_neg, neg_sub]
-  congr 1
-  simp [Complex.conj_ofReal]
+  rw [opY, star_smul]
+  have hdiff : star (shiftAdj - shift) = -(shiftAdj - shift) := by
+    rw [ContinuousLinearMap.star_eq_adjoint, map_sub,
+      ← ContinuousLinearMap.star_eq_adjoint, ← ContinuousLinearMap.star_eq_adjoint,
+      star_shiftAdj, star_shift]
+    abel
+  rw [hdiff]
+  simp only [Complex.star_def, Complex.conj_ofReal]
+  rw [smul_neg]
+  have hscalar : (starRingEnd ℂ) ((k : ℂ) / 2) = (k : ℂ) / 2 := by
+    rw [starRingEnd_apply, star_div₀, star_ofNat]
+    simp [Complex.star_def, Complex.conj_ofReal]
+  rw [hscalar]
 
 /-- `[X, Y] = (i k² / 2) P₀`. -/
 theorem commutator_opX_opY (k : ℝ) :
