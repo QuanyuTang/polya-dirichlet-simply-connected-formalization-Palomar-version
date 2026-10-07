@@ -16,8 +16,8 @@ project:
     - "Zuoqin Wang"
 
 classification:
-  arxiv: ["math.SP", "math.LO"]
-  msc2020: ["35P15", "03B35"]
+  arxiv: ["math.SP", "math.AP"]
+  msc2020: ["35P15", "35J05"]
 
 sources:
   - title: "Strict Dirichlet Pólya inequality on simply connected planar domains"
@@ -25,18 +25,28 @@ sources:
       - "Quanyu Tang"
       - "Zuoqin Wang"
     type: "paper"
-    id: "https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization/blob/main/paper/D_simply_connected_strict_v7.tex"
+    id: "https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization/blob/0c42251e2b602c9b49db6f2c37a9d27c858d1475/paper/D_simply_connected_strict_v7.tex"
     location: "paper/D_simply_connected_strict_v7.tex in this repository"
     relationship: "formalizes"
     note: "The Lean development formalizes the principal strict Dirichlet inequality and its counting formulation."
+
+related_formalizations:
+  - id: "https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization/commit/0c42251e2b602c9b49db6f2c37a9d27c858d1475"
+    relationship: "builds-on"
+    note: "This Palomar-compatible repository ports the earlier Lean 4.28.0 formalization and adds the Challenge/Solution/Comparator structure, pinned Palomar toolchain, and independent-kernel checks."
 
 status:
   scope: >-
     The repository contains both the variational and operator-spectral Dirichlet
     Pólya developments. The Palomar Challenge/Solution pair advertises the
-    variational strict inequality `PalomarDirichlet.main_result`; the operator
-    spectral theorems `main` and `main_counting` remain in RequestProject/MainSpectral.lean and are re-exported by RequestProject/Main.lean
-    and are not selected by this Comparator configuration.
+    variational strict inequality PalomarDirichlet.main_result, whose statement
+    is the min-max form identified with the operator eigenvalues by the proved
+    bridge in RequestProject/MainSpectral.lean. The operator-spectral theorems
+    main and main_counting remain in RequestProject/MainSpectral.lean and are
+    re-exported by RequestProject/Main.lean, but are not selected by this
+    Comparator configuration. Challenge.lean contains one deliberate sorry
+    in the statement declaration; the substantive proof source and Solution
+    contain no sorry.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Classical.choice", "Quot.sound"]
@@ -53,21 +63,21 @@ automation:
         hardware: "local development machine"
       prompting_notes: "Proofs were developed from a self-contained mathematical statement and checked in Lean."
   spend_usd: "subscription-based"
-  notes: "Human authors reviewed the statement, proof scope, dependencies, and final axiom report."
+  notes: "The human authors reviewed the statement, proof scope, dependencies, and axiom reports. No independent peer review is claimed."
 
 fidelity:
   divergences: >-
     The Palomar Comparator advertises the variational strict inequality. The
-    source also proves the stronger operator-spectral declarations `main` and
-    `main_counting`, which remain available through the aggregate source entry
-    point but are not selected by the small Challenge surface.
+    source also proves the stronger operator-spectral declarations main and
+    main_counting. The proved bridge identifies the variational min-max
+    eigenvalues with the ordered positive eigenvalues of the constructed
+    Dirichlet operator; the larger spectral declarations remain available in
+    the source development but are not selected by this small Challenge surface.
 
 review:
   status: "self-assessed"
-  reviewers:
-    - "Quanyu Tang"
-    - "Zuoqin Wang"
-  notes: "The variational statement and its axiom dependencies were audited locally; the spectral bridge is retained in the source development. Palomar Challenge/Solution/Comparator review remains to be completed."
+  reviewers: []
+  notes: "The authors performed a self-audit of the statement, proof scope, dependencies, and axiom reports. The repository local Palomar-style metadata, source, and Comparator checks pass; official Palomar mechanical verification and editorial review remain pending. No independent peer review is claimed."
 
 alignment:
   namespace: "PalomarDirichlet"
@@ -76,17 +86,17 @@ alignment:
       lean: "PalomarDirichlet.main_result"
       module: "Challenge.lean and Solution.lean"
       status: "proved"
-      note: "The Comparator declaration has exactly the statement of `strict_polya_variational` in RequestProject/MainSpectral.lean."
+      note: "The Comparator declaration has exactly the statement of strict_polya_variational in RequestProject/MainSpectral.lean."
     - source: "Operator-spectral indexed theorem (retained source result)"
       lean: "main"
       module: "RequestProject/MainSpectral.lean"
       status: "proved"
-      note: "This stronger operator-spectral theorem is present in the substantive source but is not selected by the current Palomar Comparator configuration."
+      note: "This stronger operator-spectral theorem is present in the substantive source and is axiom-audited, but is not selected by the current Palomar Comparator configuration."
     - source: "Operator-spectral counting theorem (retained source result)"
       lean: "main_counting"
       module: "RequestProject/MainSpectral.lean"
       status: "proved"
-      note: "This counting theorem is present in the substantive source but is not selected by the current Palomar Comparator configuration."
+      note: "This counting theorem is present in the substantive source and is axiom-audited, but is not selected by the current Palomar Comparator configuration."
 
 acknowledgements: "Lean 4, Mathlib, Aristotle, Codex, and the authors' human review."
 

@@ -1043,25 +1043,45 @@ Thus the formalized counting function is precisely
 $N_\Omega(E)=\#\{j\ge1:\lambda_j(\Omega)\le E\}$, with the endpoint
 included and eigenvalues repeated according to multiplicity.
 
+For the Palomar Challenge/Solution pair, the small auditable Challenge
+states the variational min--max formulation
+\texttt{PalomarDirichlet.main\_result}, and the Solution proves that
+statement from \texttt{strict\_polya\_variational}. The proved bridge theorem
+identifies this
+min--max eigenvalue with the ordered positive eigenvalue of the constructed
+Dirichlet operator. Consequently, the Palomar-selected variational statement
+is the formulation corresponding to the indexed assertion above, while the
+operator-spectral declarations \texttt{main} and
+\texttt{main\_counting} remain proved source results and are checked by
+\texttt{verification/Audit.lean}, but are not selected by the current
+Comparator configuration.
+
 The source tree is pinned to
 \texttt{leanprover/lean4:v4.35.0-rc2} and the matching \texttt{mathlib}
 revision recorded in the repository's \texttt{lake-manifest.json}.
-The Palomar preparation uses this pinned toolchain; the repository records
-the exact build and audit commands. The recorded verification uses
-\texttt{lake build +RequestProject.Main}. Axiom audits of both
-final declarations and the operator and spectral identification
+The repository records the build, audit, source-check, checksum, and
+Comparator commands. The Lean verification workflow builds the source and
+audits the final declarations; the Palomar-style workflow additionally checks
+the Challenge/Solution pair with Lean, NanoDa, and con-ron. Axiom audits of
+the final declarations and the operator and spectral identification
 theorems report only \texttt{propext}, \texttt{Classical.choice}, and
 \texttt{Quot.sound}, the standard principles of Lean's classical
-mathematics~\cite{LeanAxioms}. They do not depend on \texttt{sorryAx}
-or additional axioms; the proof source under \texttt{RequestProject/} contains no \texttt{sorry},
-\texttt{admit}, or \texttt{native\_decide} proof steps.
+mathematics~\cite{LeanAxioms}. They do not depend on \texttt{sorryAx} or
+additional axioms; the single \texttt{sorry} in \texttt{Challenge.lean} is
+the deliberate Challenge statement hole and is not used by the Solution or
+the substantive proof source. The proof source under \texttt{RequestProject/}
+contains no \texttt{admit} or \texttt{native\_decide} proof steps.
 
 The original variational development was produced with the assistance
 of Aristotle; the operator and spectral identification was developed
 with the assistance of Codex. The source, pinned dependencies,
 verification commands, build record, and source checksum are provided
-in the accompanying GitHub repository.\footnote{\url{https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization-Palomar-version}.
-The repository is currently private; access must be granted by its owner.}
+in the accompanying GitHub repository.
+\footnote{\url{https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization-Palomar-version}.
+The repository contains the checked Palomar-compatible snapshot; the
+eventual Palomar submission will use a public repository and a fixed
+full commit SHA. Official Palomar verification and editorial review are
+separate from the repository's workflows.}
 
 \begin{thebibliography}{99}
 

@@ -115,15 +115,17 @@ Actions tab. It uses the official [Lean action](https://github.com/leanprover/le
 with the toolchain and dependency revisions committed to this repository.
 
 Each run checks the source checksum, downloads the mathlib dependency cache,
-compiles `RequestProject.Main` on a fresh Ubuntu runner, and runs the guarded
-audit. Build warnings cause failure. The workflow also checks that verification
-has not changed tracked files. The action versions are pinned to commit hashes.
+compiles RequestProject.Main on a fresh Ubuntu runner, and runs the guarded
+audit. Lean linter and deprecation warnings are reported but are non-fatal;
+build, audit, checksum, and file-integrity failures remain fatal. The workflow
+also checks that verification has not changed tracked files. The action versions
+are pinned to commit hashes.
 After changing the proof source, rebuild and audit it before updating
 `verification/SHA256SUMS` and the verified snapshot below.
 
 ## Palomar build snapshot
 
-The Palomar release pin is Lean 4.35.0-rc2 with the matching Mathlib revision recorded in lake-manifest.json. The original 4.28.0 source snapshot was checked before this preparation work. A fresh Palomar-toolchain build and Comparator run are required for this release snapshot.
+The Palomar release pin is Lean 4.35.0-rc2 with the matching Mathlib revision recorded in lake-manifest.json. The repository's latest Palomar-style workflow has completed the metadata, source, checksum, and Comparator checks, including Lean, NanoDa, and con-ron kernel acceptance. Official Palomar verification and editorial review remain pending for the eventual public commit.
 
 ## 中文说明
 
@@ -139,19 +141,25 @@ The Palomar release pin is Lean 4.35.0-rc2 with the matching Mathlib revision re
 
 ## Palomar preparation
 
-This repository is a private preparation snapshot for a future Palomar Registry
-submission. The authors and responsible maintainers are Quanyu Tang and Zuoqin
-Wang. `formalization.yaml`, `CITATION.cff`, `LICENSE`, and `PALOMAR_STATUS.md`
-record the intended provenance and submission status.
+This repository contains a checked Palomar-compatible preparation snapshot. Its
+GitHub visibility is intentionally private during this preparation phase; the
+eventual submission must use a public repository and one exact full commit SHA.
+The authors and responsible maintainers are Quanyu Tang and Zuoqin Wang.
+formalization.yaml, CITATION.cff, LICENSE, and PALOMAR_STATUS.md record the
+provenance, authorship, license, and verification status.
 
-The Palomar-compatible statement/proof split is now present in
-`Challenge.lean`, `Solution.lean`, and `comparator.json`. The selected
-Comparator declaration is `PalomarDirichlet.main_result`, which states the
-strict variational inequality proved by `strict_polya_variational`. The stronger
-operator-spectral declarations `main` and `main_counting` remain in the source
-development but are deliberately not advertised by this configuration, because
-their statement-side spectral operator definitions are substantially larger than
-Palomar's small Challenge surface. The project still needs a Palomar-supported
-Lean toolchain and a successful clean Comparator run before submission. Palomar
-submissions must use a public GitHub commit, so this preparation repository
-remains private until the authors choose the release snapshot.
+The Palomar-compatible statement/proof split is present in Challenge.lean,
+Solution.lean, and comparator.json. The selected Comparator declaration is
+PalomarDirichlet.main_result, which states the strict variational inequality
+proved by strict_polya_variational. The proved bridge identifies this min-max
+eigenvalue with the ordered positive eigenvalues of the constructed Dirichlet
+operator. The stronger operator-spectral declarations main and main_counting
+remain in the source development and are axiom-audited, but are deliberately
+not selected by this Comparator configuration because their statement-side
+spectral definitions are larger than the small Challenge surface.
+
+The single sorry in Challenge.lean is a deliberate statement hole required
+by the Challenge/Solution format. It is not used by Solution.lean or the
+substantive proof source. The local Palomar-style checks have passed; official
+Palomar verification and editorial review remain to be performed on the exact
+public submission commit.
