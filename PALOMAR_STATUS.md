@@ -7,6 +7,9 @@ remaining visibility gate.
 
 Authors and responsible maintainers: Quanyu Tang and Zuoqin Wang.
 
+The accompanying manuscript is currently under preparation. A public arXiv
+version will be linked from the repository once available.
+
 The substantive Lean source was ported from the earlier Dirichlet repository
 commit 0c42251e2b602c9b49db6f2c37a9d27c858d1475. The mathematical source is
 the paper in paper/. The Palomar Challenge/Solution pair advertises
