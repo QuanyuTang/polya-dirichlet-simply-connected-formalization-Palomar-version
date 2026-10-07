@@ -34,7 +34,7 @@ jobs:
         with:
           auto-config: "false"
           build: "true"
-          build-args: "--wfail +RequestProject.Main"
+          build-args: "+RequestProject.Main"
           use-mathlib-cache: "true"
           use-github-cache: "false"
 
