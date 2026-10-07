@@ -197,10 +197,25 @@ theorem commutator_opX_opY (k : ℝ) :
     opX k * opY k - opY k * opX k = (Complex.I * k ^ 2 / 2) • projE0 := by
   rw [← commutator_shift]
   simp only [opX, opY, smul_mul_smul]
-  rw [mul_comm ((k : ℂ) / 2) (-(Complex.I * k / 2)), ← smul_sub]
+  rw [mul_comm ((k : ℂ) / 2) (-(Complex.I * k / 2))]
+  have hfactor :
+      (-(Complex.I * k / 2) * ((k : ℂ) / 2)) •
+          ((shift + shiftAdj) * (shiftAdj - shift)) -
+        (-(Complex.I * k / 2) * ((k : ℂ) / 2)) •
+          ((shiftAdj - shift) * (shift + shiftAdj)) =
+      (-(Complex.I * k / 2) * ((k : ℂ) / 2)) •
+        (((shift + shiftAdj) * (shiftAdj - shift)) -
+          ((shiftAdj - shift) * (shift + shiftAdj))) := by
+    exact (smul_sub _ _ _).symm
+  rw [hfactor]
   have h : (shift + shiftAdj) * (shiftAdj - shift) - (shiftAdj - shift) * (shift + shiftAdj)
       = (2 : ℂ) • (shift * shiftAdj - shiftAdj * shift) := by
-    rw [two_smul]; noncomm_ring
+    rw [show (2 : ℂ) • (shift * shiftAdj - shiftAdj * shift) =
+      (shift * shiftAdj - shiftAdj * shift) +
+        (shift * shiftAdj - shiftAdj * shift) by
+      exact two_smul ℂ (shift * shiftAdj - shiftAdj * shift)]
+    simp only [add_mul, mul_sub, sub_mul, mul_add]
+    abel
   rw [h, smul_smul]
   have h2 : shift * shiftAdj - shiftAdj * shift = -(shiftAdj * shift - shift * shiftAdj) := by
     abel
@@ -742,7 +757,9 @@ lemma opODESol_spec {C : ℝ → L2N →L[ℂ] L2N} {T : Set ℝ}
 
 lemma star_real_smul_opX_add (k a b : ℝ) :
     star ((a : ℂ) • opX k + (b : ℂ) • opY k) = -((a : ℂ) • opX k + (b : ℂ) • opY k) := by
-  rw [star_add, star_smul, star_smul, star_opX, star_opY]
+  rw [ContinuousLinearMap.star_eq_adjoint, map_add,
+    ← ContinuousLinearMap.star_eq_adjoint, ← ContinuousLinearMap.star_eq_adjoint,
+    star_smul, star_smul, star_opX, star_opY]
   simp only [Complex.star_def, Complex.conj_ofReal, smul_neg, neg_add]
 
 variable (F : ℂ → ℂ) (k : ℝ)
@@ -832,11 +849,24 @@ theorem holU_mem_unitary {U : Set ℂ} (hU : IsOpen U) (hF : DifferentiableOn �
 /-- `W_0(θ) = I` for `θ ∈ [0, 2π]`. -/
 theorem holW_zero {θ : ℝ} (hθ : θ ∈ Icc 0 (2 * π)) : holW F k 0 θ = 1 := by
   have hC : coefAng F k 0 = fun _ => 0 := by
-    funext θ; simp [coefAng, dAng]
+    funext θ
+    unfold coefAng dAng
+    norm_num
+    change (0 : ℝ) • opX k + (0 : ℝ) • opY k = 0
+    ext x n
+    simp
   have hspec := opODESol_spec (C := coefAng F k 0) (T := Icc 0 (2 * π))
-    ⟨fun _ => 1, rfl, fun t _ => by rw [hC]; simpa using hasDerivWithinAt_const _ _ _⟩
+    ⟨fun _ => 1, rfl, fun t _ => by
+      rw [hC]
+      change HasDerivWithinAt (fun _ : ℝ => (1 : L2N →L[ℂ] L2N))
+        (0 : L2N →L[ℂ] L2N) (Icc 0 (2 * π)) t
+      exact hasDerivWithinAt_const _ _ _⟩
   have := eqOn_of_linear_ode_Icc (C := coefAng F k 0) (by rw [hC]; exact continuousOn_const)
-    hspec.2 (V := fun _ => 1) (fun t _ => by rw [hC]; simpa using hasDerivWithinAt_const _ _ _)
+    hspec.2 (V := fun _ => 1) (fun t _ => by
+      rw [hC]
+      change HasDerivWithinAt (fun _ : ℝ => (1 : L2N →L[ℂ] L2N))
+        (0 : L2N →L[ℂ] L2N) (Icc 0 (2 * π)) t
+      exact hasDerivWithinAt_const _ _ _)
     hspec.1 hθ
   exact this
 
@@ -1082,7 +1112,10 @@ theorem deriv_ne_zero_of_injOn {f : ℂ → ℂ} {U : Set ℂ} (hU : IsOpen U)
   have hψa : ψ a = c := by simp [hψ, hqa]
   have hφd : HasDerivAt φ c a := by
     have := ((hasDerivAt_id a).sub_const a).mul hψan.differentiableAt.hasDerivAt
-    simpa [hψa] using this
+    convert this using 1
+    · funext z
+      rfl
+    · simp [hψa]
   have hφnc : ¬ ∀ᶠ z in 𝓝 a, φ z = φ a := by
     intro hev
     have : deriv φ a = 0 := by
@@ -1198,8 +1231,12 @@ lemma continuousOn_holA_integrand (hG : DifferentiableOn ℂ G (ball 0 1)) {r : 
     ContinuousOn (fun θ => ((jac G r θ : ℝ) : ℂ) • (star (holW G k r θ) * projE0 * holW G k r θ))
       (Icc 0 (2 * π)) := by
   have hW := continuousOn_holW k hG hr
+  have hstar : Continuous (fun T : L2N →L[ℂ] L2N => star T) := by
+    simpa only [ContinuousLinearMap.star_eq_adjoint] using
+      (LinearIsometryEquiv.continuous
+        (ContinuousLinearMap.adjoint : (L2N →L[ℂ] L2N) ≃ₗᵢ⋆[ℂ] (L2N →L[ℂ] L2N)))
   refine (continuous_ofReal.comp (continuous_jac hG hr)).continuousOn.smul ?_
-  exact ((continuous_star.comp_continuousOn hW).mul continuousOn_const).mul hW
+  exact ((hstar.comp_continuousOn hW).mul continuousOn_const).mul hW
 
 /-- `L_{r,k} = (k²/2) M_r A_r M_r^*` with `M_r = H_r R_r^*`. -/
 lemma holL_eq (F : ℂ → ℂ) (r : ℝ) :
@@ -1348,6 +1385,11 @@ lemma norm_holW_sub_le (hG : DifferentiableOn ℂ G (ball 0 1)) {k₁ k₂ r s :
   have hsu : ∀ t ∈ Icc 0 (2 * π), holW G k₂ s t ∈ unitary (L2N →L[ℂ] L2N) := fun t ht =>
     holW_mem_unitary k₂ isOpen_ball hG (circ_mem_ball hs) ht
   set g : ℝ → L2N →L[ℂ] L2N := fun t => star (holW G k₁ r t) * holW G k₂ s t with hg
+  letI : StarModule ℝ (L2N →L[ℂ] L2N) :=
+    ⟨fun a T => by
+      change star ((a : ℂ) • T) = (a : ℂ) • star T
+      rw [star_smul]
+      simp⟩
   have hgd : ∀ t ∈ Icc 0 (2 * π), HasDerivWithinAt g
       (star (holW G k₁ r t) * (coefAng G k₂ s t - coefAng G k₁ r t) * holW G k₂ s t)
       (Icc 0 (2 * π)) t := by
@@ -1356,7 +1398,7 @@ lemma norm_holW_sub_le (hG : DifferentiableOn ℂ G (ball 0 1)) {k₁ k₂ r s :
     convert hd using 1
     rw [star_mul, star_coefAng]
     simp only [mul_sub, sub_mul, mul_neg, neg_mul, mul_assoc]
-    abel
+    noncomm_ring
   have hbound : ∀ t ∈ Ico 0 (2 * π),
       ‖star (holW G k₁ r t) * (coefAng G k₂ s t - coefAng G k₁ r t) * holW G k₂ s t‖ ≤ ε := by
     intro t ht
@@ -1392,7 +1434,8 @@ lemma norm_conj_projE0_le {W V : L2N →L[ℂ] L2N} (hW : W ∈ unitary (L2N →
     exact norm_projE0_le
   · have heq : star W * projE0 * W - star V * projE0 * V =
         star (W - V) * projE0 * W + star V * projE0 * (W - V) := by
-      simp only [star_sub, sub_mul, mul_sub]; abel
+      simp only [ContinuousLinearMap.star_eq_adjoint, map_sub, sub_mul, mul_sub]
+      noncomm_ring
     rw [heq]
     calc ‖star (W - V) * projE0 * W + star V * projE0 * (W - V)‖
         ≤ ‖star (W - V) * projE0 * W‖ + ‖star V * projE0 * (W - V)‖ := norm_add_le _ _
@@ -1475,7 +1518,7 @@ lemma coefAng_sub_coefAng (F : ℂ → ℂ) (k₁ k₂ r θ : ℝ) :
     coefAng F k₁ r θ - coefAng F k₂ r θ = coefAng F (k₁ - k₂) r θ := by
   simp only [coefAng, opX, opY, ofReal_sub, smul_smul]
   rw [show ∀ a b c d : ℂ, ∀ X Y : L2N →L[ℂ] L2N, (a • X + b • Y) - (c • X + d • Y) = (a - c) • X + (b - d) • Y from
-    fun a b c d X Y => by simp only [sub_smul]; abel]
+    fun a b c d X Y => by module]
   congr 2 <;> ring
 
 lemma norm_coefAng_le (F : ℂ → ℂ) (k r θ : ℝ) :
@@ -1564,7 +1607,8 @@ lemma norm_holA_sub_le (hG : DifferentiableOn ℂ G (ball 0 1)) {r₀ : ℝ}
     set Ar := star (holW G k r₀ θ) * projE0 * holW G k r₀ θ
     have heq : ((jac G s θ : ℝ) : ℂ) • As - ((jac G r₀ θ : ℝ) : ℂ) • Ar =
         ((jac G s θ - jac G r₀ θ : ℝ) : ℂ) • As + ((jac G r₀ θ : ℝ) : ℂ) • (As - Ar) := by
-      simp only [ofReal_sub, sub_smul, smul_sub]; abel
+      simp only [ofReal_sub, sub_smul, smul_sub]
+      module
     rw [heq]
     calc ‖((jac G s θ - jac G r₀ θ : ℝ) : ℂ) • As + ((jac G r₀ θ : ℝ) : ℂ) • (As - Ar)‖
         ≤ ‖((jac G s θ - jac G r₀ θ : ℝ) : ℂ) • As‖ + ‖((jac G r₀ θ : ℝ) : ℂ) • (As - Ar)‖ :=
