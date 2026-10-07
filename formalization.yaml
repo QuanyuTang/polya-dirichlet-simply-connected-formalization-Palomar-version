@@ -25,7 +25,7 @@ sources:
       - "Quanyu Tang"
       - "Zuoqin Wang"
     type: "paper"
-    id: "https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization/blob/0c42251e2b602c9b49db6f2c37a9d27c858d1475/paper/D_simply_connected_strict_v7.tex"
+    id: "https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization-Palomar-version/blob/ef13e368542014bdce12bdc3ca45e64003f7dc6d/paper/D_simply_connected_strict_v7.tex"
     location: "paper/D_simply_connected_strict_v7.tex in this repository"
     relationship: "formalizes"
     note: "The Lean development formalizes the principal strict Dirichlet inequality and its counting formulation."
