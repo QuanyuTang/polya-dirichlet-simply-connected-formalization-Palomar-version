@@ -1,9 +1,14 @@
 # Strict Dirichlet Pólya inequality: Lean formalization
 
+**Authors:** Quanyu Tang and Zuoqin Wang
+
 This repository contains a modular Lean proof of the strict Dirichlet
 Pólya inequality for bounded, nonempty, simply connected planar domains.
 `RequestProject/Main.lean` is the aggregate entry point for the three proof modules,
 together with the accompanying manuscript.
+
+The accompanying manuscript is currently under preparation. A public arXiv
+version will be linked here once available.
 
 [Lean source](RequestProject/Main.lean) ·
 [Paper PDF](paper/D_simply_connected_strict_v7.pdf) ·
@@ -129,9 +134,13 @@ The Palomar release pin is Lean 4.35.0-rc2 with the matching Mathlib revision re
 
 ## 中文说明
 
+**作者：** Quanyu Tang、Zuoqin Wang
+
 本项目固定使用 **Lean 4.35.0-rc2**。`RequestProject/Main.lean` 是聚合入口，实际证明分为 `MainBase.lean`、`MainMiddle.lean` 和 `MainSpectral.lean` 三个模块。
 原变分结论保留为 `strict_polya_variational`；新增的 `main` 证明实际 Dirichlet
 特征值的严格不等式，`main_counting` 证明包含端点、计入重数的谱计数不等式。
+
+配套论文目前仍在准备中。公开的 arXiv 版本发布后，会在这里补充链接。
 
 光滑核心、闭形式、实际算子、谱值识别及实复重数的桥接均已有 Lean 证明。
 论文第七节和 PDF 已同步。最终定理及关键桥接定理仅依赖标准三项公理。
