@@ -1,18 +1,19 @@
-# Palomar preparation status
+# Palomar registration status
 
-This repository contains a checked Palomar-compatible snapshot of the strict
-Dirichlet Pólya formalization. Its GitHub visibility is intentionally private
-during this preparation phase; publication of a final commit is the only
-remaining visibility gate.
+This repository contains the public Palomar-compatible source of the strict
+Dirichlet Pólya formalization. The exact source snapshot registered by Palomar
+is commit `ba3690bfd48618cf48da07fa4555382bd9852ff3` as
+`PALOMAR-2026-10-09-000003 v1`.
 
 Authors and responsible maintainers: Quanyu Tang and Zuoqin Wang.
 
-The accompanying manuscript is currently under preparation. A public arXiv
-version will be linked from the repository once available.
+The accompanying manuscript has been submitted to arXiv under submission
+number 8203840. The public e-print link will be added once arXiv assigns the
+final identifier.
 
 The substantive Lean source was ported from the earlier Dirichlet repository
-commit 0c42251e2b602c9b49db6f2c37a9d27c858d1475. The mathematical source is
-the paper in paper/. The Palomar Challenge/Solution pair advertises
+commit 0c42251e2b602c9b49db6f2c37a9d27c858d1475. The accompanying manuscript
+is maintained separately from this Lean repository. The Palomar Challenge/Solution pair advertises
 PalomarDirichlet.main_result, the variational theorem corresponding to
 strict_polya_variational. The stronger operator-spectral declarations
 main and main_counting remain in RequestProject/MainSpectral.lean and
@@ -32,8 +33,7 @@ source under RequestProject/ and Solution.lean contain no sorry, admit, or
 native_decide; the audited declarations use only propext, Classical.choice,
 and Quot.sound.
 
-The root license is Apache-2.0. The repository includes the manuscript TeX and
-compiled PDF, the reproducible Lean configuration, verification scripts, and
-the Palomar metadata. Official Palomar verification and editorial review have
-not yet been run; they must be performed on the eventual public commit.
-
+The root license is Apache-2.0. The repository includes the reproducible Lean
+configuration, verification scripts, and Palomar metadata. Palomar mechanical
+verification and automated editorial review have been completed for the
+registered public commit; the registry record reports no blocking problems.

@@ -5,14 +5,12 @@
 This repository contains a modular Lean proof of the strict Dirichlet
 Pólya inequality for bounded, nonempty, simply connected planar domains.
 `RequestProject/Main.lean` is the aggregate entry point for the three proof modules,
-together with the accompanying manuscript.
+together with the Palomar verification materials.
 
-The accompanying manuscript is currently under preparation. A public arXiv
-version will be linked here once available.
+The accompanying manuscript has been submitted to arXiv. Its public e-print
+link will be added here once arXiv assigns the final identifier.
 
 [Lean source](RequestProject/Main.lean) ·
-[Paper PDF](paper/D_simply_connected_strict_v7.pdf) ·
-[Paper source](paper/D_simply_connected_strict_v7.tex) ·
 [Automatic verification](https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization-Palomar-version/actions/workflows/lean.yml) ·
 [Palomar Registry entry](https://palomar-registry.org/entry?id=PALOMAR-2026-10-09-000003&version=1)
 
@@ -63,19 +61,10 @@ theorem about the full operator `spectrum` set.
 | `lean-toolchain` | Pins Lean to `leanprover/lean4:v4.35.0-rc2` |
 | `lakefile.toml` | Lean project and mathlib dependency configuration |
 | `lake-manifest.json` | Exact dependency revisions |
-| `paper/D_simply_connected_strict_v7.tex` | Manuscript and formalization section |
-| `paper/D_simply_connected_strict_v7.pdf` | Compiled manuscript PDF |
 | `verification/Audit.lean` | Checks public statements and enforces 16 axiom audits |
 | `verification/local-build.txt` | Historical pre-Palomar Lean 4.28.0 build record; rerun for the current rc2 snapshot |
 | `verification/SHA256SUMS` | SHA-256 checksum of the verified proof source |
 | `.github/workflows/lean.yml` | Rebuilds and audits the pinned proof on GitHub Actions |
-
-Both the LaTeX source and compiled PDF are supplied in `paper/`. To rebuild
-the PDF, run from that directory (the recorded build uses TeX Live 2022):
-
-```text
-latexmk -pdf -interaction=nonstopmode -halt-on-error D_simply_connected_strict_v7.tex
-```
 
 ## Reproduce the Lean check
 
@@ -147,10 +136,10 @@ automated review identified no problems. The registered source uses Lean
 原变分结论保留为 `strict_polya_variational`；新增的 `main` 证明实际 Dirichlet
 特征值的严格不等式，`main_counting` 证明包含端点、计入重数的谱计数不等式。
 
-配套论文目前仍在准备中。公开的 arXiv 版本发布后，会在这里补充链接。
+配套论文已经提交 arXiv。待 arXiv 分配正式公开编号后，会在这里补充链接。
 
 光滑核心、闭形式、实际算子、谱值识别及实复重数的桥接均已有 Lean 证明。
-论文第七节和 PDF 已同步。最终定理及关键桥接定理仅依赖标准三项公理。
+最终定理及关键桥接定理仅依赖标准三项公理。
 执行上面的构建及审计命令即可复核。审计文件包含 16 项断言，成功时不会
 逐项打印公理列表；出现意外依赖会直接报错。GitHub Actions 自动执行源码
 校验、固定版本构建及上述审计，结果可从仓库的 Actions 页面查看。

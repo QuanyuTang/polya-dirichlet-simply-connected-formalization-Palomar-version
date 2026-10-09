@@ -25,10 +25,10 @@ sources:
       - "Quanyu Tang"
       - "Zuoqin Wang"
     type: "paper"
-    id: "https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization-Palomar-version/blob/ef13e368542014bdce12bdc3ca45e64003f7dc6d/paper/D_simply_connected_strict_v7.tex"
-    location: "paper/D_simply_connected_strict_v7.tex in this repository"
+    id: "https://arxiv.org/submit/8203840"
+    location: "arXiv submission 8203840; the public e-print identifier is pending"
     relationship: "formalizes"
-    note: "The Lean development formalizes the principal strict Dirichlet inequality and its counting formulation."
+    note: "The Lean development formalizes the principal strict Dirichlet inequality and its counting formulation. Replace the submission URL with the public arXiv e-print URL once arXiv assigns the final identifier."
 
 related_formalizations:
   - id: "https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization/commit/0c42251e2b602c9b49db6f2c37a9d27c858d1475"
@@ -77,7 +77,7 @@ fidelity:
 review:
   status: "self-assessed"
   reviewers: []
-  notes: "The authors performed a self-audit of the statement, proof scope, dependencies, and axiom reports. The repository local Palomar-style metadata, source, and Comparator checks pass; official Palomar mechanical verification and editorial review remain pending. No independent peer review is claimed."
+  notes: "The authors performed a self-audit of the statement, proof scope, dependencies, and axiom reports. Palomar registered PALOMAR-2026-10-09-000003 v1 after mechanical verification and automated editorial review identified no problems. No independent peer review is claimed."
 
 alignment:
   namespace: "PalomarDirichlet"
