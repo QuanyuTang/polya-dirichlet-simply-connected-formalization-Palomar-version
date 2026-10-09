@@ -16,12 +16,17 @@ arXiv. Its public e-print link will be added here once available.
 
 ## Development and authorship
 
-The mathematical statement, proof scope, and correspondence with the
-informal result were determined and reviewed by the authors, Quanyu Tang and
-Zuoqin Wang. Aristotle and Codex were used as AI assistants for Lean
-formalization, proof development, debugging, and source audits. The registered
-Lean result was checked by the Lean kernel and reviewed by the authors. No
-independent peer review is claimed.
+The mathematical result and its informal proof were developed by the authors
+with assistance from ChatGPT. The Lean formalization was then developed by the
+authors using Aristotle and Codex. Aristotle and Codex assisted with
+translating proof ideas into Lean, constructing proof steps, debugging, and
+source audits.
+The authors supplied and reviewed the mathematical content, theorem scope, and
+correspondence with the informal result, and take responsibility for the final
+repository. Some Lean code and proof steps were generated with AI assistance
+rather than written line by line by the authors. The registered Lean result
+was checked by the Lean kernel and reviewed by the authors. No independent
+peer review is claimed.
 
 ## Mathematical statement and scope
 
@@ -149,10 +154,12 @@ automated review identified no problems. The registered source uses Lean
 
 ### 开发与作者责任
 
-本形式化由作者 Quanyu Tang 和 Zuoqin Wang 主导。定理陈述、证明范围及其
-与非形式化结果的对应关系由作者确定并审核。Aristotle 和 Codex 作为 AI
-辅助工具，用于 Lean 代码开发、证明调试和源码审计。登记的 Lean 结果经过
-Lean 内核检查，并由作者审核；本项目不声称已经完成独立同行评审。
+数学结果及其非形式化证明由作者在 ChatGPT 辅助下完成。随后，作者利用
+Aristotle 和 Codex 开发 Lean 形式化。上述 AI 工具参与了将证明思路转写
+为 Lean、构造证明步骤、调试和源码审计。作者提供并审核数学内容、定理
+范围及其与非形式化结果的对应关系，并对最终仓库负责。部分 Lean 代码和
+证明步骤由 AI 辅助生成，并非全部由作者逐行手写。登记的 Lean 结果经过
+Lean 内核检查，且由作者审核；本项目不声称已经完成独立同行评审。
 
 光滑核心、闭形式、实际算子、谱值识别及实复重数的桥接均已有 Lean 证明。
 最终定理及关键桥接定理仅依赖标准三项公理。
