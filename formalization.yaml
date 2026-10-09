@@ -25,10 +25,9 @@ sources:
       - "Quanyu Tang"
       - "Zuoqin Wang"
     type: "paper"
-    id: "https://arxiv.org/submit/8203840"
-    location: "arXiv submission 8203840; the public e-print identifier is pending"
+    location: "Accompanying manuscript in preparation for public release on arXiv"
     relationship: "formalizes"
-    note: "The Lean development formalizes the principal strict Dirichlet inequality and its counting formulation. Replace the submission URL with the public arXiv e-print URL once arXiv assigns the final identifier."
+    note: "The Lean development formalizes the principal strict Dirichlet inequality and its counting formulation. Add the public arXiv e-print identifier here once available."
 
 related_formalizations:
   - id: "https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization/commit/0c42251e2b602c9b49db6f2c37a9d27c858d1475"

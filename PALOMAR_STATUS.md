@@ -7,9 +7,8 @@ is commit `ba3690bfd48618cf48da07fa4555382bd9852ff3` as
 
 Authors and responsible maintainers: Quanyu Tang and Zuoqin Wang.
 
-The accompanying manuscript has been submitted to arXiv under submission
-number 8203840. The public e-print link will be added once arXiv assigns the
-final identifier.
+The accompanying manuscript is being prepared and will be made public on
+arXiv. Its public e-print link will be added once available.
 
 The substantive Lean source was ported from the earlier Dirichlet repository
 commit 0c42251e2b602c9b49db6f2c37a9d27c858d1475. The accompanying manuscript

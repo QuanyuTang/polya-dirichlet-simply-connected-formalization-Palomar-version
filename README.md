@@ -7,8 +7,8 @@ Pólya inequality for bounded, nonempty, simply connected planar domains.
 `RequestProject/Main.lean` is the aggregate entry point for the three proof modules,
 together with the Palomar verification materials.
 
-The accompanying manuscript has been submitted to arXiv. Its public e-print
-link will be added here once arXiv assigns the final identifier.
+The accompanying manuscript is being prepared and will be made public on
+arXiv. Its public e-print link will be added here once available.
 
 [Lean source](RequestProject/Main.lean) ·
 [Automatic verification](https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization-Palomar-version/actions/workflows/lean.yml) ·
@@ -136,7 +136,7 @@ automated review identified no problems. The registered source uses Lean
 原变分结论保留为 `strict_polya_variational`；新增的 `main` 证明实际 Dirichlet
 特征值的严格不等式，`main_counting` 证明包含端点、计入重数的谱计数不等式。
 
-配套论文已经提交 arXiv。待 arXiv 分配正式公开编号后，会在这里补充链接。
+配套论文正在准备中，即将公开在 arXiv。公开链接发布后，会在这里补充。
 
 光滑核心、闭形式、实际算子、谱值识别及实复重数的桥接均已有 Lean 证明。
 最终定理及关键桥接定理仅依赖标准三项公理。
