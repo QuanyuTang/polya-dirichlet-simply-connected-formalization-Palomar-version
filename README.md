@@ -13,7 +13,8 @@ version will be linked here once available.
 [Lean source](RequestProject/Main.lean) ·
 [Paper PDF](paper/D_simply_connected_strict_v7.pdf) ·
 [Paper source](paper/D_simply_connected_strict_v7.tex) ·
-[Automatic verification](https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization-Palomar-version/actions/workflows/lean.yml)
+[Automatic verification](https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization-Palomar-version/actions/workflows/lean.yml) ·
+[Palomar Registry entry](https://palomar-registry.org/entry?id=PALOMAR-2026-10-09-000003&version=1)
 
 ## Mathematical statement and scope
 
@@ -128,9 +129,15 @@ are pinned to commit hashes.
 After changing the proof source, rebuild and audit it before updating
 `verification/SHA256SUMS` and the verified snapshot below.
 
-## Palomar build snapshot
+## Palomar registration
 
-The Palomar release pin is Lean 4.35.0-rc2 with the matching Mathlib revision recorded in lake-manifest.json. The repository's latest Palomar-style workflow has completed the metadata, source, checksum, and Comparator checks, including Lean, NanoDa, and con-ron kernel acceptance. Official Palomar verification and editorial review remain pending for the eventual public commit.
+This public repository was registered in the Palomar Registry as
+[`PALOMAR-2026-10-09-000003 v1`](https://palomar-registry.org/entry?id=PALOMAR-2026-10-09-000003&version=1).
+The immutable registered snapshot is commit
+`ba3690bfd48618cf48da07fa4555382bd9852ff3`. The record selects
+`PalomarDirichlet.main_result`; its mechanical verification passed and its
+automated review identified no problems. The registered source uses Lean
+4.35.0-rc2 with the matching Mathlib revision recorded in `lake-manifest.json`.
 
 ## 中文说明
 
@@ -148,14 +155,12 @@ The Palomar release pin is Lean 4.35.0-rc2 with the matching Mathlib revision re
 逐项打印公理列表；出现意外依赖会直接报错。GitHub Actions 自动执行源码
 校验、固定版本构建及上述审计，结果可从仓库的 Actions 页面查看。
 
-## Palomar preparation
+## Palomar verification materials
 
-This repository contains a checked Palomar-compatible preparation snapshot. Its
-GitHub visibility is intentionally private during this preparation phase; the
-eventual submission must use a public repository and one exact full commit SHA.
+This repository contains the Palomar-compatible statement and proof materials.
 The authors and responsible maintainers are Quanyu Tang and Zuoqin Wang.
-formalization.yaml, CITATION.cff, LICENSE, and PALOMAR_STATUS.md record the
-provenance, authorship, license, and verification status.
+`formalization.yaml`, `CITATION.cff`, `LICENSE`, and `PALOMAR_STATUS.md` record
+the provenance, authorship, license, and verification status.
 
 The Palomar-compatible statement/proof split is present in Challenge.lean,
 Solution.lean, and comparator.json. The selected Comparator declaration is
@@ -169,6 +174,6 @@ spectral definitions are larger than the small Challenge surface.
 
 The single sorry in Challenge.lean is a deliberate statement hole required
 by the Challenge/Solution format. It is not used by Solution.lean or the
-substantive proof source. The local Palomar-style checks have passed; official
-Palomar verification and editorial review remain to be performed on the exact
-public submission commit.
+substantive proof source. The Palomar registration and its mechanical and
+automated editorial checks were completed for the exact public commit recorded
+above.
