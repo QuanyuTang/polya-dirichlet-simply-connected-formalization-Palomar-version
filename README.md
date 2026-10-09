@@ -14,6 +14,15 @@ arXiv. Its public e-print link will be added here once available.
 [Automatic verification](https://github.com/QuanyuTang/polya-dirichlet-simply-connected-formalization-Palomar-version/actions/workflows/lean.yml) ·
 [Palomar Registry entry](https://palomar-registry.org/entry?id=PALOMAR-2026-10-09-000003&version=1)
 
+## Development and authorship
+
+The mathematical statement, proof scope, and correspondence with the
+informal result were determined and reviewed by the authors, Quanyu Tang and
+Zuoqin Wang. Aristotle and Codex were used as AI assistants for Lean
+formalization, proof development, debugging, and source audits. The registered
+Lean result was checked by the Lean kernel and reviewed by the authors. No
+independent peer review is claimed.
+
 ## Mathematical statement and scope
 
 The declaration `main` in `RequestProject/Main.lean` proves, for every bounded
@@ -137,6 +146,13 @@ automated review identified no problems. The registered source uses Lean
 特征值的严格不等式，`main_counting` 证明包含端点、计入重数的谱计数不等式。
 
 配套论文正在准备中，即将公开在 arXiv。公开链接发布后，会在这里补充。
+
+### 开发与作者责任
+
+本形式化由作者 Quanyu Tang 和 Zuoqin Wang 主导。定理陈述、证明范围及其
+与非形式化结果的对应关系由作者确定并审核。Aristotle 和 Codex 作为 AI
+辅助工具，用于 Lean 代码开发、证明调试和源码审计。登记的 Lean 结果经过
+Lean 内核检查，并由作者审核；本项目不声称已经完成独立同行评审。
 
 光滑核心、闭形式、实际算子、谱值识别及实复重数的桥接均已有 Lean 证明。
 最终定理及关键桥接定理仅依赖标准三项公理。
